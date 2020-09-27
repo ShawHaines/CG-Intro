@@ -28,8 +28,9 @@ Polygon ellipse(const double a, const double b,const Point& center,
     double x=a*R[0],y=a*R[2];
     points.push_back(Point(x,y)+center);
     for (double phi=0;phi<2*PI;phi+=dphi){
-        x=M[0]*x+M[1]*y;
-        y=M[2]*x+M[3]*y;
+        double newX=M[0]*x+M[1]*y;
+        double newY=M[2]*x+M[3]*y;
+        x=newX;y=newY;
         points.push_back(Point(x,y)+center);
     }
     return points;
