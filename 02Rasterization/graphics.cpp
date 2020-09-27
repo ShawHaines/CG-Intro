@@ -58,14 +58,14 @@ std::vector<Point> Canvas::drawVector(const Point& p) {
     //     for (int x = 0; x <= p.y; x++) l.push_back(Point(x, 0));
     //     return l;
     // }
-    int dx = p.x, dy = p.y, P = 2 * dy - dx;
+    int dx = p.x, dy = p.y, P = (dy<<1) - dx;
     l.push_back(Point(0, 0));
     for (int x = 1, y = 0; x <= dx; x++) {
         if (P > 0) {
             y += 1;
-            P = P + dy << 1 - dx << 1;
+            P = P + (dy<<1) - (dx<<1);
         } else
-            P = P + dy << 1;
+            P = P + (dy<<1);
         l.push_back(Point(x, y));
     }
     return l;
@@ -75,7 +75,7 @@ int Canvas::scatter(const Point& p, const Color& color) {
     // be careful about a boundary check!
     if (p.x>=Width||p.x<0||p.y<0||p.y>=Height)
         return 0;
-    int i = ((Height-p.y)*Width+p.x) * 3;
+    int i = ((Height-1-p.y)*Width+p.x) * 3;
     data[i] = color.r;
     data[i + 1] = color.g;
     data[i + 2] = color.b;

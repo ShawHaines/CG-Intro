@@ -57,6 +57,18 @@ int main() {
     double theta;
     std::cin >>a >>b >>cx >>cy >>theta;
     canvas.drawOutline(ellipse(a,b,Point(cx,cy),theta));
+    // canvas.drawLine(Point(0, 0), Point(canvas.Width, 0));
+    // canvas.drawLine(Point(0, 100), Point(canvas.Width, 100));
+    // canvas.drawLine(Point(0, 200), Point(canvas.Width, 200));
+    // canvas.drawLine(Point(0, 300), Point(canvas.Width, 300));
+    // canvas.drawLine(Point(0  ,0), Point(0  , canvas.Height));
+    // canvas.drawLine(Point(100,0), Point(100, canvas.Height));
+    // canvas.drawLine(Point(200,0), Point(200, canvas.Height));
+    // canvas.drawLine(Point(300,0), Point(300, canvas.Height));
+    // Point a(200,100), b(100,200), c(300,300);
+    // canvas.drawLine(a, b);
+    // canvas.drawLine(b, c);
+    // canvas.drawLine(a, c);
     canvas.show("test.ppm");
     return 0;
 }
