@@ -73,7 +73,7 @@ int Canvas::scatter(const Point& p, const Color& color) {
     // be careful about a boundary check!
     if (p.x>=Width||p.x<0||p.y<0||p.y>=Height)
         return 0;
-    int i = (p.y*Width+p.x) * 3;
+    int i = ((Height-p.y)*Width+p.x) * 3;
     data[i] = color.r;
     data[i + 1] = color.g;
     data[i + 2] = color.b;
