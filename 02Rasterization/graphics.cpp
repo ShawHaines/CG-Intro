@@ -13,6 +13,7 @@ Canvas::~Canvas() { delete[] data; }
 int Canvas::drawLine(const Point& start, const Point& end) {
     // TODO: minimize the space usage in drawVector()
     // make sure start is on the left side of right.
+    
     if (start.x > end.x) return drawLine(end, start);
     auto l = drawVector(end - start);
     for (auto p : l) scatter(p + start);
@@ -27,6 +28,7 @@ int Canvas::drawOutline(const std::vector<Point>& points) {
 }
 
 int Canvas::fillPolygon(const std::vector<Point>& points) {
+    // TODO: finish the function
     int minIndex = 0, maxIndex = 0;
     for (auto i = points.begin(); i != points.end(); i++) {
         if (points[minIndex].y > i->y) minIndex = i - points.begin();
@@ -35,6 +37,8 @@ int Canvas::fillPolygon(const std::vector<Point>& points) {
 
     return 0;
 }
+
+// -----------------private functions---------------------
 
 std::vector<Point> Canvas::drawVector(const Point& p) {
     // special case dealing, ensure they are in the first octant.
@@ -66,8 +70,6 @@ std::vector<Point> Canvas::drawVector(const Point& p) {
     }
     return l;
 }
-
-// -----------------private functions---------------------
 
 int Canvas::scatter(const Point& p, const Color& color) {
     // be careful about a boundary check!
