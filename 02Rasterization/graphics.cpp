@@ -50,10 +50,10 @@ std::vector<Point> Canvas::drawVector(const Point& p) {
     }
     std::vector<Point> l;
     l.reserve(p.x + 1);
-    if (p.y == 0) {  // horizontal line
-        for (int x = 0; x <= p.y; x++) l.push_back(Point(x, 0));
-        return l;
-    }
+    // if (p.y == 0) {  // horizontal line
+    //     for (int x = 0; x <= p.y; x++) l.push_back(Point(x, 0));
+    //     return l;
+    // }
     int dx = p.x, dy = p.y, P = 2 * dy - dx;
     l.push_back(Point(0, 0));
     for (int x = 1, y = 0; x <= dx; x++) {

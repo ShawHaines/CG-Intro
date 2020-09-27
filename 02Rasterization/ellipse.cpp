@@ -5,13 +5,13 @@
 
 Polygon ellipse(const double a, const double b,const Point& center,
                                              const double theta) {
-    double cosine = std::cos(theta), sine = std::sin(theta);
+    double cosine = cos(theta), sine = sin(theta);
     double R[4] = {cosine, -sine, sine, cosine};
-    const int SLICES = 100;
+    const int SLICES = 200;
     const double PI = 3.14159265358979323846264338327950288,dphi = PI / SLICES;
     
-    cosine = std::cos(dphi);
-    sine = std::sin(dphi);
+    cosine = cos(dphi);
+    sine = sin(dphi);
     double A[4] = {cosine,-a/b*sine,b/a*sine,cosine},M[4];
     // Matrix Multiplication. B=R A (R.T)
     for (int i=0;i<2;i++)
