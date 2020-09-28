@@ -7,7 +7,7 @@ Polygon ellipse(const double a, const double b,const Point& center,
                                              const double theta) {
     double cosine = cos(theta), sine = sin(theta);
     double R[4] = {cosine, -sine, sine, cosine};
-    const int SLICES = 10;
+    const int SLICES = 100;
     const double PI = 3.14159265358979323846264338327950288,dphi = PI / SLICES;
     
     cosine = cos(dphi);
