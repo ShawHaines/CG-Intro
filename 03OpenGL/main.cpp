@@ -1,7 +1,7 @@
 #include <iostream>
-#if defined(_WIN32) || defined(WIN32)
-#include <windows.h>
-#endif
+// #if defined(_WIN32) || defined(WIN32)
+// #include <windows.h>
+// #endif
 #include "GL/glut.h"
 
 /**
@@ -110,15 +110,12 @@ int main(int argc, char **argv) {
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowPosition(100, 100);
     glutInitWindowSize(1008, 504);
-    glutCreateWindow("square");
+    glutCreateWindow("flag of Jordan");
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    // What does this one do?
-    glOrtho(0.0, 10080, 0.0, 504
-    /**
-     * Draw the national flag of Jordan. Reference in ./img/Flag_of_Jordan.svg.
-     * */0, -1.0, 1.0);
+    // What does this one do? How large do you want your canvas to be?
+    glOrtho(0.0, 10080, 0.0, 5040, -1.0, 1.0);
     glutDisplayFunc(jordanFlag);
     glutMainLoop();
     return 0;
