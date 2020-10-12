@@ -28,6 +28,7 @@ if (GLUT_FOUND)
     message("GLUT include: ${GLUT_INCLUDE_DIR}")
     # TODO: figure out what these lines do. Seems link_directories() is deprecated.
     # link_directories(AFTER ${GLUT_LIBRARIES})
+    # target_include_directories(HelloGL PUBLIC ${GLUT_INCLUDE_DIR})
     target_link_libraries(HelloGL
         GLUT::GLUT)
     message("GLUT library: ${GLUT_LIBRARIES}")
@@ -40,6 +41,7 @@ find_package(OpenGL REQUIRED)
 if (OPENGL_FOUND)
     message("OpenGL found.")
     include_directories(AFTER ${OPENGL_INCLUDE_DIR})
+    # target_include_directories(HelloGL PUBLIC ${OPENGL_INCLUDE_DIR})
     message("OpenGL include: ${OPENGL_INCLUDE_DIR}")
     # link_directories(AFTER ${OPENGL_LIBRARIES})
     target_link_libraries(HelloGL
