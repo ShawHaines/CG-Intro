@@ -6,7 +6,18 @@ project(SkyCrawling VERSION 0.1.0)
 # set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 # include(CPack)
 
-add_executable(SkyCrawling main.cpp)
+add_executable(SkyCrawling 
+    src/Solar_Material.cpp
+)
+
+# add_executable(Material
+#     src/Solar_Material.cpp
+# )
+
+target_include_directories(SkyCrawling
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+)
 
 # FIXME: These paths are hard written in CMakeLists.
 # FIXED: Configure the variables through -D option in cmake
