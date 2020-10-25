@@ -12,7 +12,9 @@ public:
     // normal vector
     Vector normal;
     int display();
-private:
+    int setColor(double r, double g, double b, double a);
+
+   private:
     GLdouble color[4];
 };
 
@@ -28,6 +30,7 @@ public:
     int display();
     // calculates revolution also in recursive manner.
     int revolution();
+    int setColor(double r,double g, double b, double a);
     // list of its satellites.
     std::list<Astroid*> satellites;
     // TODO: Add rotation. For now we omit the rotation axis.

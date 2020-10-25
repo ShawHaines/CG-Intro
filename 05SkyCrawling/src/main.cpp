@@ -40,11 +40,16 @@ int addStars(){
     sun->satellites.push_back(jupyter);
     // satellites
     earth->satellites.push_back(moon);
+    // style setting.
+    earth->setColor(0,0,1,1);
+    moon->setColor(0.1,0.1,0.1,1);
+    jupyter->setColor(189/255.0, 158/255.0, 125/255.0,1);
+    sun->setColor(1,0,0,1);
     return 0;
 }
 
 void solarDisplay(){
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
@@ -58,27 +63,29 @@ void solarDisplay(){
 
 // set lighting to make the scene nicer.
 void init() {
-    // defining the color and position of light source.
-    GLfloat ambient[] = {1.0, 1.0, 0.1, 1.0};
-    GLfloat diffuse[] = {1.0, 1.0, 1.0, 1.0};
-    GLfloat position[] = {-80.0, 50.0, 25.0, 1.0};
-    //选择光照模型
-    GLfloat lmodel_ambient[] = {0.4, 0.4, 0.4, 1.0};
-    GLfloat local_view[] = {0.0};
-    glClearColor(0.0, 0.0, 0.0, 0.0);
+    // reflexibility
+    GLfloat mat_specular[] = {1.0, 1.0, 1.0, 1.0};  // mirror reflex coefficient
+    GLfloat mat_shininess[] = {50.0};               // highlight
+    GLfloat light_position[] = {0, 50, 0, 0.0}; //lighting position (1,1,1).
+    GLfloat white_light[] = {1.0, 1.0, 1.0, 1.0};  
+    GLfloat Light_Model_Ambient[] = {0.2, 0.2, 0.2, 1.0};  // ambiant light.
+
+    glClearColor(0.0, 0.0, 0.0, 0.0);  // bachground color
     glShadeModel(GL_SMOOTH);
-    //设置环境光
-    glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
-    //设置漫射光
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-    //设置光源位置
-    glLightfv(GL_LIGHT0, GL_POSITION, position);
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lmodel_ambient);
-    glLightModelfv(GL_LIGHT_MODEL_LOCAL_VIEWER, local_view);
-    //启动光照
-    glEnable(GL_LIGHTING);
-    //启用光源
-    glEnable(GL_LIGHT0);
+
+    // Material properties.
+    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+
+    // lighting.
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);   // Diffusing light
+    glLightfv(GL_LIGHT0, GL_SPECULAR, white_light);  // Specular light
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, Light_Model_Ambient);  // ambient light.
+
+    glEnable(GL_LIGHTING);    // Enable lighting.
+    glEnable(GL_LIGHT0);      // Enable light#0
+    glEnable(GL_DEPTH_TEST);  // Enable Depth test.
 }
 
 int move(Point& p, GLdouble dx, GLdouble dy, GLdouble dz) {
@@ -88,27 +95,6 @@ int move(Point& p, GLdouble dx, GLdouble dy, GLdouble dz) {
     cout << "(" << p[0] << ", " << p[1] << ", " << p[2] << " )" << endl;
     return 0;
 }
-
-// void display(void) {
-//     glClear(GL_COLOR_BUFFER_BIT);
-//     glMatrixMode(GL_MODELVIEW);
-//     glPushMatrix();
-//     glLoadIdentity();
-//     // seems that gluLookAt should be applied first.
-//     gluLookAt(eye[0], eye[1], eye[2], focus[0], focus[1], focus[2], 0.0, -1.0,
-//               0.0);
-//     glColor3f(1.0, 1.0, 1.0);
-//     // default is 1.0 width.
-//     glLineWidth(1.0);
-//     // glRectf(-25.0, -25.0, 25.0, 25.0);
-//     glutSolidCube(25.0);
-//     glTranslated(50.0, 0.0, -100.0);
-//     glutSolidSphere(10.0, 50, 50);
-
-//     glPopMatrix();
-
-//     glutSwapBuffers();
-// }
 
 void reshape(int w, int h) {
     glViewport(0, 0, (GLsizei)w, (GLsizei)h);
@@ -138,17 +124,6 @@ void mouse(int button, int state, int x, int y) {
             break;
     }
 
-    // switch (button) {
-    //     case GLUT_LEFT_BUTTON:
-    //         if (state == GLUT_DOWN) glutIdleFunc(spinDisplay);
-    //         break;
-    //     case GLUT_RIGHT_BUTTON:
-    //         if (state == GLUT_DOWN) glutIdleFunc(NULL);
-    //         break;
-    //     default:
-    //         break;
-    // }
-    // glutPostRedisplay();
     return;
 }
 
@@ -230,7 +205,7 @@ int main(int argc, char** argv) {
     glutInitWindowSize(800, 600);
     glutInitWindowPosition(100, 100);
     glutCreateWindow(argv[0]);
-    init();
+    // init();
     addStars();
     glutDisplayFunc(solarDisplay);
     glutReshapeFunc(reshape);

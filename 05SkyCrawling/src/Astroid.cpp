@@ -18,6 +18,7 @@ double degrees(double rad){
 Orbit::Orbit(double r, double nx, double ny, double nz)
     : radius(r), normal(nx, ny, nz) {
     normal.normalize();
+    setColor(1.0,1.0,1.0,1.0);
 };
 
 int Orbit::display() {
@@ -33,10 +34,7 @@ int Orbit::display() {
 
 Astroid::Astroid(double r,double orbitR, double _period)
     : radius(r), phi(0), period(_period),orbit(orbitR){
-    color[0] = 1.0;
-    color[1] = 0.0;
-    color[2] = 0.0;
-    color[3] = 1.0;
+    setColor(1.0,0,0,1.0);
 }
 
 int Astroid::display() {
@@ -72,3 +70,18 @@ int Astroid::revolution(){
     return 0;
 }
 
+int Orbit::setColor(double r, double g, double b, double a) {
+    color[0] = r;
+    color[1] = g;
+    color[2] = b;
+    color[3] = a;
+    return 0;
+}
+
+int Astroid::setColor(double r, double g, double b, double a){
+    color[0]=r;
+    color[1]=g;
+    color[2]=b;
+    color[3]=a;
+    return 0;
+}
