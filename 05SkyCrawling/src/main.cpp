@@ -64,8 +64,10 @@ void solarDisplay(){
 // set lighting to make the scene nicer.
 void init() {
     // reflexibility
-    GLfloat mat_specular[] = {1.0, 1.0, 1.0, 1.0};  // mirror reflex coefficient
-    GLfloat mat_shininess[] = {50.0};               // highlight
+    GLfloat mat_specular[] = {0.633, 0.727811, 0.633, 0.001};  // mirror reflex coefficient
+    GLfloat mat_shininess[] = {0.2*128};               // highlight
+    GLfloat mat_ambient[]={0.0215,0.175,0.0215,1.0};
+    GLfloat mat_diffuse[]={0.0757,0.614,0.07568,1.0};
     GLfloat light_position[] = {0, 50, 0, 0.0}; //lighting position (1,1,1).
     GLfloat white_light[] = {1.0, 1.0, 1.0, 1.0};  
     GLfloat Light_Model_Ambient[] = {0.2, 0.2, 0.2, 1.0};  // ambiant light.
@@ -76,16 +78,22 @@ void init() {
     // Material properties.
     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
     glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-
+    glMaterialfv(GL_FRONT,GL_AMBIENT, mat_ambient);
+    glMaterialfv(GL_FRONT,GL_DIFFUSE, mat_diffuse);
     // lighting.
     glLightfv(GL_LIGHT0, GL_POSITION, light_position);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);   // Diffusing light
     glLightfv(GL_LIGHT0, GL_SPECULAR, white_light);  // Specular light
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, Light_Model_Ambient);  // ambient light.
 
+    glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_LIGHTING);    // Enable lighting.
     glEnable(GL_LIGHT0);      // Enable light#0
     glEnable(GL_DEPTH_TEST);  // Enable Depth test.
+
+    glColorMaterial(GL_FRONT,GL_DIFFUSE);
+    glColorMaterial(GL_FRONT,GL_AMBIENT);
+    // glColorMaterial(GL_FRONT,GL_SPECULAR);
 }
 
 int move(Point& p, GLdouble dx, GLdouble dy, GLdouble dz) {
@@ -205,7 +213,7 @@ int main(int argc, char** argv) {
     glutInitWindowSize(800, 600);
     glutInitWindowPosition(100, 100);
     glutCreateWindow(argv[0]);
-    // init();
+    init();
     addStars();
     glutDisplayFunc(solarDisplay);
     glutReshapeFunc(reshape);
