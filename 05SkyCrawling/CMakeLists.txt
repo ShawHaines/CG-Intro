@@ -1,23 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(SkyCrawling VERSION 0.1.0)
 
-
-# set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-# set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-# include(CPack)
-
-add_executable(SkyCrawling 
-    src/Solar_Material.cpp
-)
-
-# add_executable(Material
-#     src/Solar_Material.cpp
-# )
-
-target_include_directories(SkyCrawling
-    PRIVATE
-        ${PROJECT_SOURCE_DIR}/include
-)
+include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # FIXME: These paths are hard written in CMakeLists.
 # FIXED: Configure the variables through -D option in cmake
@@ -38,8 +22,9 @@ if (GLUT_FOUND)
     # TODO: figure out what these lines do. Seems link_directories() is deprecated.
     # link_directories(AFTER ${GLUT_LIBRARIES})
     # target_include_directories(HelloGL PUBLIC ${GLUT_INCLUDE_DIR})
-    target_link_libraries(SkyCrawling
-        GLUT::GLUT)
+    
+    link_libraries(GLUT::GLUT) # link_libraries could only have effects on the targets added later.
+    
     message("GLUT library: ${GLUT_LIBRARIES}")
 else()
     message(FATAL_ERROR "GLUT not found!")
@@ -53,7 +38,7 @@ if (OPENGL_FOUND)
     # target_include_directories(HelloGL PUBLIC ${OPENGL_INCLUDE_DIR})
     message("OpenGL include: ${OPENGL_INCLUDE_DIR}")
     # link_directories(AFTER ${OPENGL_LIBRARIES})
-    target_link_libraries(SkyCrawling
+    link_libraries(
         OpenGL::GL
         OpenGL::GLU)
     message("OpenGL library: ${OPENGL_LIBRARIES}")
@@ -61,3 +46,16 @@ else()
     message(FATAL_ERROR "OpenGL not found!")
 endif()
 
+add_executable(SkyCrawling
+    include/geometry.h
+    src/main.cpp
+)
+add_executable(Robot
+    src/gallery.cpp
+)
+add_executable(SolarSystem
+    src/SolarSystem.cpp
+)
+add_executable(Material
+    src/Solar_Material.cpp
+)
