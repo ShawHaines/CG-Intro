@@ -47,7 +47,10 @@ else()
 endif()
 
 add_executable(SkyCrawling
-    include/geometry.h
+    # include/geometry.h
+    # include/astroid.h
+    src/Astroid.cpp
+    src/geometry.cpp
     src/main.cpp
 )
 add_executable(Robot
