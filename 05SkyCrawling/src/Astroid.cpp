@@ -43,6 +43,7 @@ int Astroid::display() {
     // get the plane by rotating according to a cross product.
     Vector upVector(0, -1, 0);
     auto axis = cross(upVector, orbit.normal);
+    axis.normalize();
     glPushMatrix();
     if (!axis.isZero()){
         double angle = degrees(acos(orbit.normal.dot(upVector)));

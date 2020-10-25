@@ -33,7 +33,7 @@ static Astroid* sun=NULL;
 int addStars(){
     sun=new Astroid(10,0,1e6);
     auto earth=new Astroid(2.5,30,10,0,1,0);
-    auto moon = new Astroid(1,5,5, 0,10,0.1);
+    auto moon = new Astroid(1,5,5, 0,-10,1);
     auto jupyter= new Astroid(5,50,60);
     // planets
     sun->satellites.push_back(earth);
