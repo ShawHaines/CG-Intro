@@ -32,8 +32,8 @@ int Orbit::display() {
     return 0;
 }
 
-Astroid::Astroid(double r,double orbitR, double _period)
-    : radius(r), phi(0), period(_period),orbit(orbitR){
+Astroid::Astroid(double r,double orbitR, double _period,double nx, double ny, double nz)
+    : radius(r), phi(0), period(_period),orbit(orbitR,nx,ny,nz){
     setColor(1.0,0,0,1.0);
 }
 

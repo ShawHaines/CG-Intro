@@ -20,7 +20,7 @@ public:
 
 class Astroid{
 public:
-    Astroid(double r,double orbitR,double period=100);
+    Astroid(double r,double orbitR,double period=100,double nx=0,double ny=-1,double nz=0);
     double radius;
     Orbit orbit;
     /**

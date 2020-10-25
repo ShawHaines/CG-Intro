@@ -32,8 +32,8 @@ static Astroid* sun=NULL;
 // add stars to the solar system. The only root of the tree is a sun.
 int addStars(){
     sun=new Astroid(10,0,1e6);
-    auto earth=new Astroid(2.5,30,10);
-    auto moon = new Astroid(1,5,5);
+    auto earth=new Astroid(2.5,30,10,0,1,0);
+    auto moon = new Astroid(1,5,5, 0,10,0.1);
     auto jupyter= new Astroid(5,50,60);
     // planets
     sun->satellites.push_back(earth);
@@ -42,6 +42,7 @@ int addStars(){
     earth->satellites.push_back(moon);
     // style setting.
     earth->setColor(0,0,1,1);
+
     moon->setColor(0.1,0.1,0.1,1);
     jupyter->setColor(189/255.0, 158/255.0, 125/255.0,1);
     sun->setColor(1,0,0,1);
