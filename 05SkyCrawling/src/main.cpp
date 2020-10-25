@@ -1,4 +1,4 @@
-#include <GL/glut.h>
+#include <GL/freeglut.h>
 #include <iostream>
 #include <stdlib.h>
 // #include <Windows.h> // actually glut deals with it already.
@@ -16,9 +16,19 @@ static Point focus={0.0,0.0,0.0};
 // for mouse clicking 
 static int x_0;
 static int y_0;
+
+// angle of viewing.
+static GLdouble angle=60.0;
+// angle range and steps.
+static GLdouble angleStep=5.0,angleMin=5.0,angleMax=120.0;
+
+// Field of view parameters.
+static GLdouble aspect=16.0/9.0,zNear=5.0,zFar=1000.0;
+
+
 void init() {
     //定义光源的颜色和位置
-    GLfloat ambient[] = {0.5, 0.8, 0.1, 0.1};
+    GLfloat ambient[] = {0.5, 0.8, 0.1, 1.0};
     GLfloat diffuse[] = {1.0, 1.0, 1.0, 1.0};
     GLfloat position[] = {-80.0, 50.0, 25.0, 1.0};
     //选择光照模型
@@ -54,8 +64,8 @@ void display(void) {
     glPushMatrix();
     glLoadIdentity();
     // seems that gluLookAt should be applied first.
-    gluLookAt(eye[0], eye[1], eye[2], focus[0], focus[1], focus[2], 0.0, 0.0,
-              1.0);
+    gluLookAt(eye[0], eye[1], eye[2], focus[0], focus[1], focus[2], 0.0, -1.0,
+              0.0);
     glColor3f(1.0, 1.0, 1.0);
     // default is 1.0 width.
     glLineWidth(1.0);
@@ -72,8 +82,8 @@ void display(void) {
 void reshape(int w, int h) {
     glViewport(0, 0, (GLsizei)w, (GLsizei)h);
     glMatrixMode(GL_PROJECTION);
-    // glLoadIdentity();
-    gluPerspective(60.0,16.0/9.0,5.0,1000.0);
+    glLoadIdentity();
+    gluPerspective(angle,aspect,zNear,zFar);
     // glMatrixMode(GL_MODELVIEW);
     // glPushMatrix();
     // gluLookAt(eye[0],eye[1],eye[2],focus[0],focus[1],focus[2],0.0,0.0,1.0);
@@ -120,16 +130,16 @@ void keyPressed(unsigned char key, int mouseX, int mouseY) {
             x=step;
             break;
         case 'w':
-            y=step;
+            z=-step;
             break;
         case 's':
-            y=-step;
-            break;
-        case 'j': // vim style keymap for up.
             z=step;
             break;
+        case 'j': // vim style keymap for up.
+            y=step;
+            break;
         case 'k':
-            z=-step;
+            y=-step;
             break;
     }
     cout << "eye   ";
@@ -160,6 +170,25 @@ void mouseMove(int x, int y) {
     return;
 }
 
+void mouseWheel(int wheel, int direction, int x, int y){
+    printf("wheel: %d, direction: %d, x:%d, y:%d\n",wheel, direction,x,y);
+    switch (direction){
+        case -1:  // zoom out
+            if (angle - angleStep >= angleMin) angle -= angleStep;
+            break;
+        case +1:
+            if (angle + angleStep <= angleMax) angle +=angleStep;
+            break;
+        default:
+            break;
+    }
+    cout<< "angle: "<<angle<<endl;
+    glMatrixMode(GL_PROJECTION);//remember to overwrite the original one...
+    glLoadIdentity();
+    gluPerspective(angle,aspect,zNear,zFar);
+    glutPostRedisplay();
+    return;
+}
 
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
@@ -174,6 +203,7 @@ int main(int argc, char** argv) {
     glutMouseFunc(mouse);
     glutMotionFunc(mouseMove);
     glutKeyboardFunc(keyPressed);
+    glutMouseWheelFunc(mouseWheel);
     glutMainLoop();
     return 0;
 }
