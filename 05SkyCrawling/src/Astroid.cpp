@@ -9,7 +9,7 @@
 
 static double orbitWidth = 0.1;
 static int slices = 50;
-static double dt = 0.1;
+static double dt = 0.015;
 
 // converts radians to degrees.
 double degrees(double rad) { return rad * 180.0 / M_PI; }

@@ -27,25 +27,37 @@ static GLdouble angleStep = 5.0, angleMin = 5.0, angleMax = 120.0;
 
 // Field of view parameters.
 static GLdouble aspect = 16.0 / 9.0, zNear = 5.0, zFar = 1000.0;
+// time refrash rate, in milliseconds.
+static unsigned int interval = 15;
 
 static Astroid* sun = NULL;
 
 // add stars to the solar system. The only root of the tree is a sun.
 int addStars() {
     sun = new Astroid(10, 0, 1e6);
+    // normal co-planar orbit test case.
     auto earth = new Astroid(2.5, 30, 10, 0, 1, 0);
+    // non-coplanar orbit test, satellite.
     auto moon = new Astroid(1, 5, 5, 0, -10, 1);
-    auto jupyter = new Astroid(5, 50, 60);
+    auto jupyter = new Astroid(5, 75, 60, 1, 5, 0);
+    auto mercury = new Astroid(1.5, 20, 15, 0.1, 1, 0);
+    auto saturn = new Astroid(3.5, 55, 100);
+    // saturn ring is a satellite with 0 size...
+    auto saturnRing = new Astroid(0, 5, 1e6, 1, -5, 1);
     // planets
     sun->satellites.push_back(earth);
     sun->satellites.push_back(jupyter);
+    sun->satellites.push_back(mercury);
+    sun->satellites.push_back(saturn);
     // satellites
     earth->satellites.push_back(moon);
+    saturn->satellites.push_back(saturnRing);
     // style setting.
     earth->setColor(0, 0, 1, 1);
-
-    moon->setColor(0.1, 0.1, 0.1, 1);
+    mercury->setColor(0.1,0.1,0.1,1);
+    moon->setColor(0.8, 0.8, 0.8, 1);
     jupyter->setColor(189 / 255.0, 158 / 255.0, 125 / 255.0, 1);
+    saturn->setColor(189 / 255.0, 158 / 255.0, 125 / 255.0, 1);
     sun->setColor(1, 0, 0, 1);
     return 0;
 }
@@ -119,10 +131,12 @@ void reshape(int w, int h) {
     // glPopMatrix();
 }
 
-void timer() {
+void timer(int value) {
     sun->revolution();
     glutPostRedisplay();
-    Sleep(100);
+    // use this tricky method to refresh repeatedly. Hopefully it will not block
+    // the threads.
+    glutTimerFunc(interval, timer, 0);
 }
 
 // mouse event, triggered when mouse was clicked.
@@ -226,7 +240,7 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(keyPressed);
     glutMouseWheelFunc(mouseWheel);
     // glutTimerFunc(100,timer,0);
-    glutIdleFunc(timer);
+    glutTimerFunc(interval, timer, 0);
     glutMainLoop();
     return 0;
 }
