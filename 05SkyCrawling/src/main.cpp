@@ -14,22 +14,29 @@ using namespace std;
  * the right hand rule.
  * */
 
-static Point eye = {0.0, 0.0, 100.0};
-static Point focus = {0.0, 0.0, 0.0};
+// static Point eye = {0.0, 0.0, 100.0};
+// static Point focus = {0.0, 0.0, 0.0};
 // for mouse clicking
 static int x_0;
 static int y_0;
 
-// angle of viewing.
+// Field of view parameters.
+static GLdouble aspect = 16.0 / 9.0, zNear = 5.0, zFar = 1000.0;
+// view angle of perspective projection.
 static GLdouble angle = 60.0;
 // angle range and steps.
 static GLdouble angleStep = 5.0, angleMin = 5.0, angleMax = 120.0;
 
-// Field of view parameters.
-static GLdouble aspect = 16.0 / 9.0, zNear = 5.0, zFar = 1000.0;
 // time refrash rate, in milliseconds.
 static unsigned int interval = 15;
 
+// viewing angle, measured in degrees.
+static GLdouble roll = 0, pitch = 0, yaw = 0;
+static GLdouble coeRoll = 0, coePitch = 0.1, coeYaw = 0.1; // we don't consider roll for now.
+// allowed pitch range. Yaw don't have such problems.
+static GLdouble pitchMin=-87,pitchMax=87;
+
+// star.
 static Astroid* sun = NULL;
 
 // add stars to the solar system. The only root of the tree is a sun.
@@ -54,7 +61,7 @@ int addStars() {
     saturn->satellites.push_back(saturnRing);
     // style setting.
     earth->setColor(0, 0, 1, 1);
-    mercury->setColor(0.1,0.1,0.1,1);
+    mercury->setColor(0.1, 0.1, 0.1, 1);
     moon->setColor(0.8, 0.8, 0.8, 1);
     jupyter->setColor(189 / 255.0, 158 / 255.0, 125 / 255.0, 1);
     saturn->setColor(189 / 255.0, 158 / 255.0, 125 / 255.0, 1);
@@ -66,10 +73,12 @@ void solarDisplay() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glLoadIdentity();
+    // glLoadIdentity();
     // seems that gluLookAt should be applied first.
-    gluLookAt(eye[0], eye[1], eye[2], focus[0], focus[1], focus[2], 0.0, -1.0,
-              0.0);
+    // gluLookAt(eye[0], eye[1], eye[2], focus[0], focus[1], focus[2], 0.0,
+    // -1.0, 0.0);
+    // initial position.
+    glTranslated(0,0,-100);
     sun->display();
     glPopMatrix();
     glutSwapBuffers();
@@ -156,7 +165,7 @@ void mouse(int button, int state, int x, int y) {
 // keyboard event callback.
 void keyPressed(unsigned char key, int mouseX, int mouseY) {
     GLdouble x = 0, y = 0, z = 0;
-    GLdouble step = 10.0;
+    GLdouble step = 1.0;
     switch (key) {
         case 'a':
             x = -step;  // go leftward is x minus.
@@ -177,30 +186,29 @@ void keyPressed(unsigned char key, int mouseX, int mouseY) {
             y = -step;
             break;
     }
-    cout << "eye   ";
-    move(eye, x, y, z);
+    glMatrixMode(GL_MODELVIEW);
+    glTranslated(x, y, z);
     glutPostRedisplay();
 }
 
 // Mouse motion event, triggered when a mouse key is pressed and mouse is
 // moving.
 void mouseMove(int x, int y) {
-    int dx = x - x_0;
-    int dy = y - y_0;
-
+    double dYaw = (x - x_0) * coeYaw;
+    double dPitch = (y - y_0) * coePitch;
     x_0 = x;
     y_0 = y;
-    cout << "focus ";
-    move(focus, dx, dy, 0);
+    yaw+=dYaw;
+    pitch+=dPitch;
+    if (pitch>=pitchMax || pitch<=pitchMin){
+        pitch-=dPitch;
+        dPitch=0;
+    }
+    while (yaw>=360) yaw-=360;
     glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    // don't use gluLookAt, thorough implementation of self frame.
-    // gluLookAt(eye[0],eye[1],eye[2],focus[0],focus[1],focus[2],0.0,1.0,0.0);
-
-    // be careful with the sign.
-    glRotated(dx, 0.0, -1.0, 0.0);
-    glRotated(dy, 1.0, 0.0, 0.0);
-    glPopMatrix();
+    // be careful with the signs!
+    glRotated(dYaw, 0.0, -1.0, 0.0);
+    glRotated(dPitch, 1.0, 0.0, 0.0);
     glutPostRedisplay();
     return;
 }
