@@ -32,9 +32,10 @@ static unsigned int interval = 15;
 
 // viewing angle, measured in degrees.
 static GLdouble roll = 0, pitch = 0, yaw = 0;
-static GLdouble coeRoll = 0, coePitch = 0.1, coeYaw = 0.1; // we don't consider roll for now.
+static GLdouble coeRoll = 0, coePitch = 0.1,
+                coeYaw = 0.1;  // we don't consider roll for now.
 // allowed pitch range. Yaw don't have such problems.
-static GLdouble pitchMin=-87,pitchMax=87;
+static GLdouble pitchMin = -87, pitchMax = 87;
 
 // star.
 static Astroid* sun = NULL;
@@ -69,36 +70,41 @@ int addStars() {
     return 0;
 }
 
+// draw auxilary axes.
+void drawAxis() {
+    glBegin(GL_LINES);
+    GLfloat originalLineWidth;
+    glGetFloatv(GL_LINE_WIDTH, &originalLineWidth);
+    glLineWidth(500000.0);
+    glColor3d(1, 0, 0);
+    glVertex3d(0.0, 0.0, 0.0);
+    glVertex3d(100.0, 0.0, 0.0);  // x axis.
+    glColor3d(0, 1, 0);
+    glVertex3d(0.0, 0.0, 0.0);
+    glVertex3d(0.0, 100.0, 0.0);  // y axis.
+    glColor3d(0, 0, 1);
+    glVertex3d(0.0, 0.0, 0.0);
+    glVertex3d(0.0, 0.0, 100.0);  // z axis.
+    glLineWidth(originalLineWidth);
+    glEnd();
+    return;
+}
+
 void solarDisplay() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
 
-    // seems that gluLookAt should be applied first.
-    // gluLookAt(eye[0], eye[1], eye[2], focus[0], focus[1], focus[2], 0.0,
-    // -1.0, 0.0);
-    
-    // auxilary axis.
-    glBegin(GL_LINES);
-    GLfloat originalLineWidth;
-    glGetFloatv(GL_LINE_WIDTH,&originalLineWidth);
-    glLineWidth(500000.0);
-    glColor3d(1,0,0);
-    glVertex3d(0.0,0.0,0.0);
-    glVertex3d(100.0,0.0,0.0);  // x axis.
-    glColor3d(0,1,0);
-    glVertex3d(0.0,0.0,0.0);
-    glVertex3d(0.0,100.0,0.0);  // y axis.
-    glColor3d(0,0,1);
-    glVertex3d(0.0,0.0,0.0);
-    glVertex3d(0.0,0.0,100.0);  // z axis.
-    glLineWidth(originalLineWidth);
-    glEnd();
+    drawAxis();
+    // seems that gluLookAt should be applied first. Even if you don't 
+    // declare it, the system will automatically adopt a gluLookAt(0,0,0, 0,0,-1, 0,1,0)
+    gluLookAt(0, 0, 0, 0, 0, 100, 0.0, -1.0, 0.0);
 
     sun->display();
     glPopMatrix();
     glutSwapBuffers();
 }
+
 
 // set lighting to make the scene nicer.
 void init() {
@@ -213,13 +219,13 @@ void mouseMove(int x, int y) {
     double dPitch = (y - y_0) * coePitch;
     x_0 = x;
     y_0 = y;
-    yaw+=dYaw;
-    pitch+=dPitch;
-    if (pitch>=pitchMax || pitch<=pitchMin){
-        pitch-=dPitch;
-        dPitch=0;
+    yaw += dYaw;
+    pitch += dPitch;
+    if (pitch >= pitchMax || pitch <= pitchMin) {
+        pitch -= dPitch;
+        dPitch = 0;
     }
-    while (yaw>=360) yaw-=360;
+    while (yaw >= 360) yaw -= 360;
     glMatrixMode(GL_MODELVIEW);
     // be careful with the signs!
     glRotated(dYaw, 0.0, -1.0, 0.0);
