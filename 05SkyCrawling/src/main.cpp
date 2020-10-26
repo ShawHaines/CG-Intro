@@ -1,9 +1,10 @@
 #include <GL/freeglut.h>
 #include <stdlib.h>
+
 #include <iostream>
 // #include <Windows.h> // actually glut deals with it already.
-#include "geometry.h"
 #include "Astroid.h"
+#include "geometry.h"
 
 using namespace std;
 
@@ -27,29 +28,29 @@ static GLdouble angleStep = 5.0, angleMin = 5.0, angleMax = 120.0;
 // Field of view parameters.
 static GLdouble aspect = 16.0 / 9.0, zNear = 5.0, zFar = 1000.0;
 
-static Astroid* sun=NULL;
+static Astroid* sun = NULL;
 
 // add stars to the solar system. The only root of the tree is a sun.
-int addStars(){
-    sun=new Astroid(10,0,1e6);
-    auto earth=new Astroid(2.5,30,10,0,1,0);
-    auto moon = new Astroid(1,5,5, 0,-10,1);
-    auto jupyter= new Astroid(5,50,60);
+int addStars() {
+    sun = new Astroid(10, 0, 1e6);
+    auto earth = new Astroid(2.5, 30, 10, 0, 1, 0);
+    auto moon = new Astroid(1, 5, 5, 0, -10, 1);
+    auto jupyter = new Astroid(5, 50, 60);
     // planets
     sun->satellites.push_back(earth);
     sun->satellites.push_back(jupyter);
     // satellites
     earth->satellites.push_back(moon);
     // style setting.
-    earth->setColor(0,0,1,1);
+    earth->setColor(0, 0, 1, 1);
 
-    moon->setColor(0.1,0.1,0.1,1);
-    jupyter->setColor(189/255.0, 158/255.0, 125/255.0,1);
-    sun->setColor(1,0,0,1);
+    moon->setColor(0.1, 0.1, 0.1, 1);
+    jupyter->setColor(189 / 255.0, 158 / 255.0, 125 / 255.0, 1);
+    sun->setColor(1, 0, 0, 1);
     return 0;
 }
 
-void solarDisplay(){
+void solarDisplay() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
@@ -65,35 +66,37 @@ void solarDisplay(){
 // set lighting to make the scene nicer.
 void init() {
     // reflexibility
-    GLfloat mat_specular[] = {0.633, 0.727811, 0.633, 0.001};  // mirror reflex coefficient
-    GLfloat mat_shininess[] = {0.2*128};               // highlight
-    GLfloat mat_ambient[]={0.0215,0.175,0.0215,1.0};
-    GLfloat mat_diffuse[]={0.0757,0.614,0.07568,1.0};
-    GLfloat light_position[] = {0, 50, 0, 0.0}; //lighting position (1,1,1).
-    GLfloat white_light[] = {1.0, 1.0, 1.0, 1.0};  
+    GLfloat mat_specular[] = {0.633, 0.727811, 0.633,
+                              0.001};       // mirror reflex coefficient
+    GLfloat mat_shininess[] = {0.2 * 128};  // highlight
+    GLfloat mat_ambient[] = {0.0215, 0.175, 0.0215, 1.0};
+    GLfloat mat_diffuse[] = {0.0757, 0.614, 0.07568, 1.0};
+    GLfloat light_position[] = {0, 50, 0, 0.0};  // lighting position (1,1,1).
+    GLfloat white_light[] = {1.0, 1.0, 1.0, 1.0};
     GLfloat Light_Model_Ambient[] = {0.2, 0.2, 0.2, 1.0};  // ambiant light.
 
-    glClearColor(0.0, 0.0, 0.0, 0.0);  // bachground color
+    glClearColor(0.0, 0.0, 0.0, 0.0);  // background color
     glShadeModel(GL_SMOOTH);
 
     // Material properties.
     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
     glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-    glMaterialfv(GL_FRONT,GL_AMBIENT, mat_ambient);
-    glMaterialfv(GL_FRONT,GL_DIFFUSE, mat_diffuse);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
     // lighting.
     glLightfv(GL_LIGHT0, GL_POSITION, light_position);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);   // Diffusing light
     glLightfv(GL_LIGHT0, GL_SPECULAR, white_light);  // Specular light
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, Light_Model_Ambient);  // ambient light.
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT,
+                   Light_Model_Ambient);  // ambient light.
 
     glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_LIGHTING);    // Enable lighting.
     glEnable(GL_LIGHT0);      // Enable light#0
     glEnable(GL_DEPTH_TEST);  // Enable Depth test.
 
-    glColorMaterial(GL_FRONT,GL_DIFFUSE);
-    glColorMaterial(GL_FRONT,GL_AMBIENT);
+    glColorMaterial(GL_FRONT, GL_DIFFUSE);
+    glColorMaterial(GL_FRONT, GL_AMBIENT);
     // glColorMaterial(GL_FRONT,GL_SPECULAR);
 }
 
@@ -116,7 +119,7 @@ void reshape(int w, int h) {
     // glPopMatrix();
 }
 
-void timer(){
+void timer() {
     sun->revolution();
     glutPostRedisplay();
     Sleep(100);

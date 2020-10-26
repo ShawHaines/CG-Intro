@@ -1,4 +1,5 @@
 #include "geometry.h"
+
 #include <math.h>
 
 double dot(const Vector& v1, const Vector& v2) {
@@ -30,6 +31,6 @@ Vector cross(const Vector& v1, const Vector& v2) {
 int Vector::normalize() {
     if (isZero()) return 0;
     double length = norm();
-    for (int i = 0; i < 3; i++) end[i]=end[i]/length;
+    for (int i = 0; i < 3; i++) end[i] = end[i] / length;
     return 0;
 }
