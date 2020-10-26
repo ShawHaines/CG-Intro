@@ -361,3 +361,4 @@ MigrationBackup/
 
 # the ones on the bottoms can override those on top.
 !03OpenGL/HelloGL.exe
+!05SkyCrawling/SkyCrawling.exe
