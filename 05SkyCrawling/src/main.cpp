@@ -77,8 +77,9 @@ void solarDisplay() {
     // seems that gluLookAt should be applied first.
     // gluLookAt(eye[0], eye[1], eye[2], focus[0], focus[1], focus[2], 0.0,
     // -1.0, 0.0);
+    
     // initial position.
-    glTranslated(0,0,-100);
+    // glTranslated(0,0,-100);
     sun->display();
     glPopMatrix();
     glutSwapBuffers();
