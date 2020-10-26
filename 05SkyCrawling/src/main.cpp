@@ -73,13 +73,28 @@ void solarDisplay() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    // glLoadIdentity();
+
     // seems that gluLookAt should be applied first.
     // gluLookAt(eye[0], eye[1], eye[2], focus[0], focus[1], focus[2], 0.0,
     // -1.0, 0.0);
     
-    // initial position.
-    // glTranslated(0,0,-100);
+    // auxilary axis.
+    glBegin(GL_LINES);
+    GLfloat originalLineWidth;
+    glGetFloatv(GL_LINE_WIDTH,&originalLineWidth);
+    glLineWidth(500000.0);
+    glColor3d(1,0,0);
+    glVertex3d(0.0,0.0,0.0);
+    glVertex3d(100.0,0.0,0.0);  // x axis.
+    glColor3d(0,1,0);
+    glVertex3d(0.0,0.0,0.0);
+    glVertex3d(0.0,100.0,0.0);  // y axis.
+    glColor3d(0,0,1);
+    glVertex3d(0.0,0.0,0.0);
+    glVertex3d(0.0,0.0,100.0);  // z axis.
+    glLineWidth(originalLineWidth);
+    glEnd();
+
     sun->display();
     glPopMatrix();
     glutSwapBuffers();
