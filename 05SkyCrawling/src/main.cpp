@@ -27,7 +27,7 @@ static GLdouble angle = 60.0;
 // angle range and steps.
 static GLdouble angleStep = 5.0, angleMin = 5.0, angleMax = 120.0;
 
-// time refrash rate, in milliseconds.
+// time refresh rate, in milliseconds.
 static unsigned int interval = 15;
 
 // viewing angle, measured in degrees.
@@ -61,7 +61,7 @@ int addStars() {
     saturn->satellites.push_back(saturnRing);
     // style setting.
     earth->setColor(0, 0, 1, 1);
-    mercury->setColor(0.1, 0.1, 0.1, 1);
+    mercury->setColor(0.4, 0.4, 0.4, 1);
     moon->setColor(0.8, 0.8, 0.8, 1);
     jupyter->setColor(189 / 255.0, 158 / 255.0, 125 / 255.0, 1);
     saturn->setColor(189 / 255.0, 158 / 255.0, 125 / 255.0, 1);
@@ -116,9 +116,8 @@ void init() {
     glEnable(GL_LIGHT0);      // Enable light#0
     glEnable(GL_DEPTH_TEST);  // Enable Depth test.
 
-    glColorMaterial(GL_FRONT, GL_DIFFUSE);
-    glColorMaterial(GL_FRONT, GL_AMBIENT);
-    // glColorMaterial(GL_FRONT,GL_SPECULAR);
+    // This setting looks much nicer.
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 }
 
 int move(Point& p, GLdouble dx, GLdouble dy, GLdouble dz) {
@@ -179,7 +178,7 @@ void keyPressed(unsigned char key, int mouseX, int mouseY) {
         case 's':
             z = step;
             break;
-        case 'j':  // vim style keymap for up.
+        case 'j':  // vim style keymap for down.
             y = step;
             break;
         case 'k':
@@ -187,7 +186,7 @@ void keyPressed(unsigned char key, int mouseX, int mouseY) {
             break;
     }
     glMatrixMode(GL_MODELVIEW);
-    glTranslated(x, y, z);
+    glTranslated(-x, -y, -z);
     glutPostRedisplay();
 }
 
