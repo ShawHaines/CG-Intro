@@ -146,13 +146,13 @@ glutTimerFunc(interval, timer, 0);
 
 设置方法都是利用freeglut库定义的回调函数进行。每种不同的操作对应不同的变换类型。
 
-| 按键  | 功能  | 变换矩阵|
-|---|---|---|
-| <kbd>w</kbd>/<kbd>s</kbd> | 沿z轴前进/后退 | `glTranslated` |
-| <kbd>a</kbd>/<kbd>d</kbd> | 沿x轴向左/向右 | `glTranslated` |
-| <kbd>j</kbd>/<kbd>k</kbd> | 沿y轴向上/向下(灵感来自Vim) | `glTranslated` |
-| 鼠标按键+水平/竖直拖拽 | 沿y轴/x轴旋转 | `glRotated` |
-|滚轮向上/向下| 放大/缩小|`GL_PROJECTION` `glPerspective`|
+| 按键                      | 功能                        | 变换矩阵                        |
+| ------------------------- | --------------------------- | ------------------------------- |
+| <kbd>w</kbd>/<kbd>s</kbd> | 沿z轴前进/后退              | `glTranslated`                  |
+| <kbd>a</kbd>/<kbd>d</kbd> | 沿x轴向左/向右              | `glTranslated`                  |
+| <kbd>j</kbd>/<kbd>k</kbd> | 沿y轴向上/向下(灵感来自Vim) | `glTranslated`                  |
+| 鼠标按键+水平/竖直拖拽    | 沿y轴/x轴旋转               | `glRotated`                     |
+| 滚轮向上/向下             | 放大/缩小                   | `GL_PROJECTION` `glPerspective` |
 
 ### 透视投影
 

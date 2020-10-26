@@ -53,12 +53,12 @@ add_executable(SkyCrawling
     src/geometry.cpp
     src/main.cpp
 )
-add_executable(Robot
-    src/gallery.cpp
-)
-add_executable(SolarSystem
-    src/SolarSystem.cpp
-)
-add_executable(Material
-    src/Solar_Material.cpp
-)
+# add_executable(Robot
+#     src/gallery.cpp
+# )
+# add_executable(SolarSystem
+#     src/SolarSystem.cpp
+# )
+# add_executable(Material
+#     src/Solar_Material.cpp
+# )
