@@ -41,7 +41,7 @@ static GLdouble pitchMin = -87, pitchMax = 87;
 static Astroid* sun = NULL;
 
 // add stars to the solar system. The only root of the tree is a sun.
-int addStars() {
+int addAstroids() {
     sun = new Astroid(10, 0, 1e6);
     // normal co-planar orbit test case.
     auto earth = new Astroid(2.5, 30, 10, 0, 1, 0);
@@ -237,10 +237,10 @@ void mouseMove(int x, int y) {
 void mouseWheel(int wheel, int direction, int x, int y) {
     printf("wheel: %d, direction: %d, x:%d, y:%d\n", wheel, direction, x, y);
     switch (direction) {
-        case -1:  // zoom out
+        case +1:  // zoom out
             if (angle - angleStep >= angleMin) angle -= angleStep;
             break;
-        case +1:
+        case -1:
             if (angle + angleStep <= angleMax) angle += angleStep;
             break;
         default:
@@ -261,7 +261,7 @@ int main(int argc, char** argv) {
     glutInitWindowPosition(100, 100);
     glutCreateWindow(argv[0]);
     init();
-    addStars();
+    addAstroids();
     glutDisplayFunc(solarDisplay);
     glutReshapeFunc(reshape);
     glutMouseFunc(mouse);

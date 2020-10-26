@@ -31,4 +31,5 @@ cmake .. -G <"Visual Studio 16 2019" | "MinGW Makefiles">
 ```
 
 CMake will then generate a solution file if all goes well.
-Open the solution in Visual Studio and start building.
+Open the solution in Visual Studio, select the project named SkyCrawling, then start building. 
+
