@@ -39,7 +39,7 @@ static GLdouble pitchMin = -87, pitchMax = 87;
 
 // star.
 static Astroid* sun = NULL;
-static GLdouble initPos[]={0,0,100};
+static GLdouble initPos[]={0,0,8};
 
 // add stars to the solar system. The only root of the tree is a sun.
 int addAstroids() {
@@ -104,7 +104,7 @@ void solarDisplay() {
     // declare it, the system will automatically adopt a gluLookAt(0,0,0, 0,0,-1, 0,1,0)
     gluLookAt(0, 0, 0, 0, 0, 100, 0.0, -1.0, 0.0);
 
-    sun->display();
+    // sun->display();
     glPopMatrix();
     glutSwapBuffers();
 }
@@ -272,7 +272,7 @@ int main(int argc, char** argv) {
     glutInitWindowPosition(100, 100);
     glutCreateWindow(argv[0]);
     init();
-    addAstroids();
+    // addAstroids();
     glutDisplayFunc(solarDisplay);
     glutReshapeFunc(reshape);
     glutMouseFunc(mouse);
@@ -280,7 +280,7 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(keyPressed);
     glutMouseWheelFunc(mouseWheel);
     // glutTimerFunc(100,timer,0);
-    glutTimerFunc(interval, timer, 0);
+    // glutTimerFunc(interval, timer, 0);
     glutMainLoop();
     return 0;
 }

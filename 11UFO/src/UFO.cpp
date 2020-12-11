@@ -29,7 +29,7 @@ void wing(GLdouble sideLength=1.5){
 }
 
 void drawUFO(){
-    GLdouble offset[]={0,0,80};
+    GLdouble offset[]={0,0,0};
     const int slices=50;
     glMatrixMode(GL_MODELVIEW);
 
