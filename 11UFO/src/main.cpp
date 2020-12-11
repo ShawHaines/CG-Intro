@@ -39,6 +39,7 @@ static GLdouble pitchMin = -87, pitchMax = 87;
 
 // star.
 static Astroid* sun = NULL;
+static GLdouble initPos[]={0,0,100};
 
 // add stars to the solar system. The only root of the tree is a sun.
 int addAstroids() {
@@ -90,12 +91,15 @@ void drawAxis() {
     return;
 }
 
+extern void drawUFO();
+
 void solarDisplay() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
 
     drawAxis();
+    drawUFO();
     // seems that gluLookAt should be applied first. Even if you don't 
     // declare it, the system will automatically adopt a gluLookAt(0,0,0, 0,0,-1, 0,1,0)
     gluLookAt(0, 0, 0, 0, 0, 100, 0.0, -1.0, 0.0);
@@ -105,6 +109,12 @@ void solarDisplay() {
     glutSwapBuffers();
 }
 
+
+void setPosition(GLdouble* position){
+    glMatrixMode(GL_MODELVIEW);
+    glTranslated(-position[0],-position[1],-position[2]);
+    return;
+}
 
 // set lighting to make the scene nicer.
 void init() {
@@ -140,6 +150,7 @@ void init() {
 
     // This setting looks much nicer.
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    setPosition(initPos);
 }
 
 int move(Point& p, GLdouble dx, GLdouble dy, GLdouble dz) {

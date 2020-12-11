@@ -36,10 +36,11 @@ else()
     message(FATAL_ERROR "OpenGL not found!")
 endif()
 
-add_executable(SkyCrawling
+add_executable(UFO
     # include/geometry.h
     # include/astroid.h
-    # src/Astroid.cpp
+    src/Astroid.cpp
     src/geometry.cpp
+    src/UFO.cpp
     src/main.cpp
 )
