@@ -41,6 +41,7 @@ add_executable(UFO
     # include/astroid.h
     src/Astroid.cpp
     src/geometry.cpp
+    src/Model.cpp
     src/UFO.cpp
     src/main.cpp
 )
