@@ -39,12 +39,14 @@ void cylinder(double radius, double height, GLint slices, GLint stacks) {
 
     // draw the lateral facets
     glBegin(GL_QUAD_STRIP);
-    for (int i = 0; i < slices; i++) {
+    // FIXME: close the strip loop.    
+    for (int i = 0; i <= slices; i++) {
         // FIXME: be careful of the order! See OpenGL manual.
-        glVertex3d(vertices[i][0], vertices[i][1], height);
-        glVertex2dv(vertices[i]);
+        int j=i%slices;
+        glVertex3d(vertices[j][0], vertices[j][1], height);
+        glVertex2dv(vertices[j]);
         // normal
-        glNormal3d(vertices[i][0],vertices[i][1],0);
+        glNormal3d(vertices[j][0],vertices[j][1],0);
     }
     glEnd();
     free(vertices);
