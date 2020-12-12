@@ -129,7 +129,7 @@ void init() {
     GLfloat Light_Model_Ambient[] = {0.2, 0.2, 0.2, 1.0};  // ambiant light.
 
     glClearColor(0.0, 0.0, 0.0, 0.0);  // background color
-    glShadeModel(GL_SMOOTH);
+    glShadeModel(GL_FLAT);
 
     // Material properties.
     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
@@ -150,6 +150,9 @@ void init() {
 
     // This setting looks much nicer.
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+
+    // This line of code activates wireframe mode.
+    // glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
     setPosition(initPos);
 }
 
