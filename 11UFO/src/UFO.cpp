@@ -18,25 +18,32 @@ void cylinder(double radius, double height, GLint slices, GLint stacks) {
     typedef GLdouble v2[2];
     v2* vertices = NULL;
     vertices = (v2*)calloc(slices,sizeof(GLdouble)*2);
-    // draw the lateral
+    // up face
     glBegin(GL_POLYGON);
-    glNormal3d(0,0,-1);//be careful of the signs!
+    // FIXME: Turns out you need to appoint normals to generate a proper
+    // shading.
+    glNormal3d(0,0,1);//be careful of the signs!
     for (int i = 0; i < slices; i++, angle += step) {
         vertices[i][0] =radius*cos(angle);
         vertices[i][1] =radius*sin(angle);
-        glVertex2dv(vertices[i]);
+        glVertex3d(vertices[i][0], vertices[i][1], height);
     }
     glEnd();
+    // bottom face
     glBegin(GL_POLYGON);
-    // FIXME: Turns out you need to appoint normals to generate a proper shading.
-    glNormal3d(0,0,1);
-    for (int i = 0; i < slices; i++)
-        glVertex3d(vertices[i][0], vertices[i][1], height);
+    // FIXME: Note that in order to have a correct front/ back side, you should arrange the vertices in reverse order.
+    glNormal3d(0,0,-1);// normal seems to ignore the signs.
+    for (int i = slices-1; i >=0; i--)
+        glVertex2dv(vertices[i]);
     glEnd();
+
+    // draw the lateral facets
     glBegin(GL_QUAD_STRIP);
     for (int i = 0; i < slices; i++) {
-        glVertex2dv(vertices[i]);
+        // FIXME: be careful of the order! See OpenGL manual.
         glVertex3d(vertices[i][0], vertices[i][1], height);
+        glVertex2dv(vertices[i]);
+        // normal
         glNormal3d(vertices[i][0],vertices[i][1],0);
     }
     glEnd();
@@ -79,10 +86,7 @@ void drawUFO() {
         GLdouble cylinderHeight = 4;
         cylinder(0.5, cylinderHeight / 2, slices, slices);
         glPushMatrix();
-        glTranslated(3,0,0);
-        glutSolidCylinder(0.5,cylinderHeight/2, slices,slices);
-        glPopMatrix();
-
+        
         glPushMatrix();
         glTranslated(0, 0, cylinderHeight / 2);
         // wing(1.5);
@@ -91,6 +95,12 @@ void drawUFO() {
         // reflection about the xy-plane.
         glScaled(1, 1, -1);
     }
+    glPopMatrix();
+
+    glTranslated(3, 0, 0);
+    glutSolidCylinder(0.5, 2.0, slices, slices);
+    glTranslated(3,0,0);
+    cylinder(0.5,2.0,slices,slices);
     glPopMatrix();
 
     glPopMatrix();
