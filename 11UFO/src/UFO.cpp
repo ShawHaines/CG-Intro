@@ -33,28 +33,28 @@ int cylinder(Mesh& target, double radius, double height, GLint slices, GLint sta
     auto &f = target.f;
     // top facet
     Face topFacet;
-    topFacet.normal=Vector(0,0,1);
+    // topFacet.normal=Vector(0,0,1);
     for (i=size;i<size+slices;i++)
         topFacet.push_back(std::make_shared<Vertex>(v[i]));
-    f.push_back(topFacet);
+    f.push_back(topFacet.updated());
     // bottom facet
     Face bottomFacet;
-    bottomFacet.normal=Vector(0,0,-1);
+    // bottomFacet.normal=Vector(0,0,-1);
     for (i=newSize-1;i>=size+slices;i--) 
     // reverse order so that the outward direction is correct.
         bottomFacet.push_back(std::make_shared<Vertex>(v[i]));
-    f.push_back(bottomFacet);
+    f.push_back(bottomFacet.updated());
     // lateral facets
     for (i=0;i<slices;i++){
         j=(i+1) % slices;
         Face lateralFacet;
-        lateralFacet.normal=Vector(v[i+size][0],v[i+size][1],0);
+        // lateralFacet.normal=Vector(v[i+size][0],v[i+size][1],0);
         // Note the arrangement in certain order to keep the outward direction correct.
         lateralFacet.push_back(std::make_shared<Vertex>(v[i+size]));
         lateralFacet.push_back(std::make_shared<Vertex>(v[i+size+slices]));
         lateralFacet.push_back(std::make_shared<Vertex>(v[j+size+slices]));
         lateralFacet.push_back(std::make_shared<Vertex>(v[j+size]));
-        f.push_back(lateralFacet);
+        f.push_back(lateralFacet.updated());
     }
     return 0;
 }
