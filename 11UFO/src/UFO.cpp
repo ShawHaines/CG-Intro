@@ -94,15 +94,15 @@ int sphere(Mesh& target, double radius, GLint stacks, GLint slices) {
         f.push_back(face.updated());
     }
     // stackwise add facets in the middle.
-    for (int j = 1; j < stacks; j++)
+    for (int j = 1; j < stacks-1; j++)
         for (int i = 0; i < slices; i++) {
             int k = (i + 1) % slices;
             Face face;
             // note the outward direction!
-            face.push_back(v[(j - 1) * slices + i]);
-            face.push_back(v[j * slices + i]);
-            face.push_back(v[j * slices + k]);
-            face.push_back(v[(j - 1) * slices + k]);
+            face.push_back(v[(j - 1) * slices + i + size]);
+            face.push_back(v[j * slices + i + size]);
+            face.push_back(v[j * slices + k + size]);
+            face.push_back(v[(j - 1) * slices + k + size]);
             f.push_back(face.updated());
         }
     // connected to the south pole.
@@ -138,7 +138,7 @@ void wing(GLdouble sideLength = 1.5) {
 
 // TODO: write Node... stop registering a mesh for every bloody redisplay!
 void drawUFO() {
-    static bool first=true;
+    static bool first = true;
     GLdouble offset[] = {0, 0, 0};
     const int slices = 50;
     glMatrixMode(GL_MODELVIEW);
@@ -146,14 +146,20 @@ void drawUFO() {
     glPushMatrix();
     glTranslated(offset[0], offset[1], offset[2]);
     glColor3d(1, 1, 1);
+
+    // only generates them once.
+    static Mesh sphereMesh, cylinderMesh, wingMesh;
+    GLdouble cylinderHeight = 4.0;
+    if (first) {
+        sphere(sphereMesh, 1.0, slices, slices);
+        cylinder(cylinderMesh, 0.5, cylinderHeight / 2, slices);
+        // wing(wingMesh,1.5);
+    }
+    sphereMesh.display();
     // drawing symmetric shapes loop
     glPushMatrix();
     for (int i = 0; i < 2; i++) {
-        GLdouble cylinderHeight = 4;
-        // auto newMesh=new Mesh();
-        // cylinder(*newMesh, 0.5, cylinderHeight / 2, slices, slices);
-        glPushMatrix();
-
+        cylinderMesh.display();
         glPushMatrix();
         glTranslated(0, 0, cylinderHeight / 2);
         // wing(1.5);
@@ -168,15 +174,8 @@ void drawUFO() {
     glTranslated(3, 0, 0);
     glutSolidCylinder(0.5, 2.0, slices, slices);
     glTranslated(-3, 0, 0);
-    static Mesh mesh;
-    // only generate the mesh once.
-    if (first){
-        cylinder(mesh, 0.5, 2.0, slices, 0);
-        sphere(mesh, 0.8, slices, slices);
-    }
-    mesh.display();
     glPopMatrix();
 
     glPopMatrix();
-    first=false;
+    first = false;
 }
