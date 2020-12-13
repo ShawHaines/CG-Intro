@@ -130,7 +130,7 @@ int wing(Mesh& target, GLdouble sideLength = 1.5, GLdouble thickness=0.1) {
 // TODO: write Node... stop registering a mesh for every bloody redisplay!
 void drawUFO() {
     static bool first = true,output=false;
-    GLdouble offset[] = {0, 0, 0};
+    GLdouble offset[] = {0, 0, 80};
     const int slices = 10;
     glMatrixMode(GL_MODELVIEW);
 
