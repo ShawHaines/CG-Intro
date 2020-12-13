@@ -26,6 +26,9 @@ public:
     // returns a reference so that the work can be passed on in a concise grammar.
     Face& updated();
     int display()const;
+    // overloaded push_back so that we don't have to write shared_ptr.
+    void push_back(const Vertex& v);
+    using list::push_back; // I like this grammar!
 private:
     Vector normal;
 };
