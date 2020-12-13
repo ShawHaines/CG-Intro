@@ -3,54 +3,60 @@
 #include <stdlib.h>
 
 #include "GL/freeglut.h"
+#include "Model.h"
 // #include "Astroid.h"
 // #include "geometry.h"
 
 /**
- * cylinder(), signature is all the same with
+ * cylinder(), apart from the target Mesh, arguments is all the same with
  * glutSolidCylinder( double radius, double height, GLint slices, GLint stacks);
  * */
 
-void cylinder(double radius, double height, GLint slices, GLint stacks) {
+int cylinder(Mesh& target, double radius, double height, GLint slices, GLint stacks=0) {
     // TODO: Use Bresenham algorithm.
-    glBegin(GL_QUAD_STRIP);
     GLdouble step = M_PI * 2 / slices, angle = 0;
-    typedef GLdouble v2[2];
-    v2* vertices = NULL;
-    vertices = (v2*)calloc(slices,sizeof(GLdouble)*2);
-    // up face
-    glBegin(GL_POLYGON);
-    // FIXME: Turns out you need to appoint normals to generate a proper
-    // shading.
-    glNormal3d(0,0,1);//be careful of the signs!
-    for (int i = 0; i < slices; i++, angle += step) {
-        vertices[i][0] =radius*cos(angle);
-        vertices[i][1] =radius*sin(angle);
-        glVertex3d(vertices[i][0], vertices[i][1], height);
+    auto &v=target.v;
+    int size=v.size();
+    int newSize=size+slices*2;
+    // reserve slices*2 vertices of space.
+    v.reserve(newSize);
+    int i,j;
+    // add vertices. top first.
+    for (i = 0,angle=0; i < slices; i++, angle += step) {
+        v.push_back(Vertex(radius*cos(angle),radius*sin(angle),height));
     }
-    glEnd();
-    // bottom face
-    glBegin(GL_POLYGON);
-    // FIXME: Note that in order to have a correct front/ back side, you should arrange the vertices in reverse order.
-    glNormal3d(0,0,-1);// normal seems to ignore the signs.
-    for (int i = slices-1; i >=0; i--)
-        glVertex2dv(vertices[i]);
-    glEnd();
-
-    // draw the lateral facets
-    glBegin(GL_QUAD_STRIP);
-    // FIXME: close the strip loop.    
-    for (int i = 0; i <= slices; i++) {
-        // FIXME: be careful of the order! See OpenGL manual.
-        int j=i%slices;
-        glVertex3d(vertices[j][0], vertices[j][1], height);
-        glVertex2dv(vertices[j]);
-        // normal
-        glNormal3d(vertices[j][0],vertices[j][1],0);
+    for (i = 0,angle=0; i < slices; i++, angle += step) {
+        v.push_back(Vertex(radius*cos(angle),radius*sin(angle),0));
     }
-    glEnd();
-    free(vertices);
-    return;
+    
+    // add facets.
+    auto &f = target.f;
+    // top facet
+    Face topFacet;
+    topFacet.normal=Vector(0,0,1);
+    for (i=size;i<size+slices;i++)
+        topFacet.push_back(std::make_shared<Vertex>(v[i]));
+    f.push_back(topFacet);
+    // bottom facet
+    Face bottomFacet;
+    bottomFacet.normal=Vector(0,0,-1);
+    for (i=newSize-1;i>=size+slices;i--) 
+    // reverse order so that the outward direction is correct.
+        bottomFacet.push_back(std::make_shared<Vertex>(v[i]));
+    f.push_back(bottomFacet);
+    // lateral facets
+    for (i=0;i<slices;i++){
+        j=(i+1) % slices;
+        Face lateralFacet;
+        lateralFacet.normal=Vector(v[i+size][0],v[i+size][1],0);
+        // Note the arrangement in certain order to keep the outward direction correct.
+        lateralFacet.push_back(std::make_shared<Vertex>(v[i+size]));
+        lateralFacet.push_back(std::make_shared<Vertex>(v[i+size+slices]));
+        lateralFacet.push_back(std::make_shared<Vertex>(v[j+size+slices]));
+        lateralFacet.push_back(std::make_shared<Vertex>(v[j+size]));
+        f.push_back(lateralFacet);
+    }
+    return 0;
 }
 
 /**
@@ -81,12 +87,14 @@ void drawUFO() {
     glColor3d(1, 1, 1);
     // TODO: rewrite my own version of glutSolidCylinder, sphere, etc,
     // so that it can save the points and faces as obj.
-    glutSolidSphere(1.0, slices, slices);
+
+    // glutSolidSphere(1.0, slices, slices);
     // drawing symmetric shapes loop
     glPushMatrix();
     for (int i = 0; i < 2; i++) {
         GLdouble cylinderHeight = 4;
-        cylinder(0.5, cylinderHeight / 2, slices, slices);
+        // auto newMesh=new Mesh();
+        // cylinder(*newMesh, 0.5, cylinderHeight / 2, slices, slices);
         glPushMatrix();
         
         glPushMatrix();
@@ -99,10 +107,13 @@ void drawUFO() {
     }
     glPopMatrix();
 
+    glPushMatrix();
     glTranslated(3, 0, 0);
     glutSolidCylinder(0.5, 2.0, slices, slices);
-    glTranslated(3,0,0);
-    cylinder(0.5,2.0,slices,slices);
+    glTranslated(-3,0,0);
+    Mesh mesh;
+    cylinder(mesh,0.5,2.0,slices,0);
+    mesh.display();
     glPopMatrix();
 
     glPopMatrix();

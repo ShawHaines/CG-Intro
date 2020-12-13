@@ -2,12 +2,20 @@
 #include <GL/freeglut.h>
 #include <vector>
 
-typedef GLdouble Point[3];
+class Point: public std::vector<GLdouble>{
+public:
+    Point(GLdouble x=0,GLdouble y=0, GLdouble z=0):Point::vector(3){
+        (*this)[0]=x;
+        (*this)[1]=y;
+        (*this)[2]=z;
+    };
+};
 
+// TODO: Reconstruct Vector now that Point has a good constructor.
 class Vector {
    public:
     Point end;
-    Vector(GLdouble x, GLdouble y, GLdouble z) {
+    Vector(GLdouble x=0, GLdouble y=0, GLdouble z=1) {
         end[0] = x;
         end[1] = y;
         end[2] = z;

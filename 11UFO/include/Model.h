@@ -3,28 +3,30 @@
 #include "geometry.h"
 #include <vector>
 #include <list>
-
-// TODO: Wrap them up in OOP style. Add some properties such as color, normal, etc.
+#include <memory>
 
 // stores the coordinates.
+// TODO: Add some properties such as color, etc.
 typedef Point Vertex;
 
 class Node;
 class Mesh;
 
-typedef Node* pNode;
-typedef Mesh* pMesh;
-typedef Vertex* pVertex;
-// stores the index of points.
+typedef std::shared_ptr<Node> pNode;
+typedef std::shared_ptr<Mesh> pMesh;
+typedef std::shared_ptr<Vertex> pVertex;
+
+// stores the shared pointer of points.
 class Face:public std::list<pVertex>{
 public:
-    Face(){};
+    // Face():Face::list(){};
+    using list::list;
+    Vector normal;
     int display()const;
 };
 
 class Mesh{
 public:
-    Mesh(){};
     // vertex list, allows random access.
     std::vector<Vertex> v;
     // face list, 
