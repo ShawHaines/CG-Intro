@@ -4,6 +4,7 @@
 #include <vector>
 #include <list>
 #include <memory>
+#include <iostream>
 
 // stores the coordinates.
 // TODO: Add some properties such as color, etc.
@@ -41,8 +42,8 @@ public:
     std::list<Face> f;
     // display in OpenGL viewport.
     int display() const;
-    // write into obj format into some file. TODO: Haven't implemented
-    int output() const{return 0;}
+    // write into obj format into some file.
+    int output(std::ostream& out=std::cout) const;
     // returns the number of vertices.
     int vertexSize() const;
     // returns the number of faces.

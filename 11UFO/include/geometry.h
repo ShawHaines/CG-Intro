@@ -16,7 +16,7 @@ class Vector{
     Point end;
     // default is a unit vector, just to avoid 0 norm.
     Vector(GLdouble x=0, GLdouble y=0, GLdouble z=1):end(x,y,z){};
-    Vector(Point& p):end(p){};
+    Vector(const Point& p):end(p){};
 
     double norm() const;
     double dot(const Vector& v) const;
