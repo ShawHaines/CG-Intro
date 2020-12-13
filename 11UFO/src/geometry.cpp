@@ -20,6 +20,13 @@ bool Vector::isZero() {
         return false;
 }
 
+const GLdouble& Vector::operator[](int i)const{
+    return this->end[i];
+}
+GLdouble& Vector::operator[](int i){
+    return this->end[i];
+}
+
 Vector cross(const Vector& v1, const Vector& v2) {
     double x, y, z;
     x = v1.end[1] * v2.end[2] - v1.end[2] * v2.end[1];

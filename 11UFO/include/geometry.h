@@ -11,18 +11,16 @@ public:
     };
 };
 
-// TODO: Reconstruct Vector now that Point has a good constructor.
-class Vector {
+class Vector{
    public:
     Point end;
-    Vector(GLdouble x=0, GLdouble y=0, GLdouble z=1) {
-        end[0] = x;
-        end[1] = y;
-        end[2] = z;
-    };
-    Vector(Point& p) {
-        for (int i = 0; i < 3; i++) end[i] = p[i];
-    };
+    // default is a unit vector, just to avoid 0 norm.
+    Vector(GLdouble x=0, GLdouble y=0, GLdouble z=1):end(x,y,z){};
+    Vector(Point& p):end(p){};
+
+    const GLdouble& operator[](int i) const;
+    GLdouble& operator[](int i);
+    
     double norm() const;
     double dot(const Vector& v) const;
     int normalize();

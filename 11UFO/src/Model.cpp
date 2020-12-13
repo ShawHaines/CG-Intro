@@ -2,7 +2,7 @@
 
 int Face::display() const {
     glBegin(GL_POLYGON);
-    glNormal3dv(&(this->normal.end[0]));
+    glNormal3dv(&(this->normal[0]));
     for (auto p = this->begin(); p != this->end(); p++) {
         auto vertex = *(*p);
         glVertex3d(vertex[0], vertex[1], vertex[2]);
