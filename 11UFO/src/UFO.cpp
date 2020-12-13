@@ -136,6 +136,7 @@ void wing(GLdouble sideLength = 1.5) {
     return;
 }
 
+// TODO: write Node... stop registering a mesh for every bloody redisplay!
 void drawUFO() {
     GLdouble offset[] = {0, 0, 0};
     const int slices = 50;
