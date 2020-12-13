@@ -129,9 +129,9 @@ int wing(Mesh& target, GLdouble sideLength = 1.5, GLdouble thickness=0.1) {
 
 // TODO: write Node... stop registering a mesh for every bloody redisplay!
 void drawUFO() {
-    static bool first = true;
+    static bool first = true,output=false;
     GLdouble offset[] = {0, 0, 0};
-    const int slices = 50;
+    const int slices = 10;
     glMatrixMode(GL_MODELVIEW);
 
     glPushMatrix();
@@ -147,13 +147,16 @@ void drawUFO() {
         wing(wingMesh, 1.5,0.1);
     }
     sphereMesh.display();
+    if (first&&output) sphereMesh.output();
     // drawing symmetric shapes loop
     glPushMatrix();
     for (int i = 0; i < 2; i++) {
         cylinderMesh.display();
+        if (first&&output) cylinderMesh.output();
         glPushMatrix();
         glTranslated(0, 0, cylinderHeight / 2);
         wingMesh.display();
+        if (first&&output) wingMesh.output();
         glPopMatrix();
 
         // reflection about the xy-plane.
