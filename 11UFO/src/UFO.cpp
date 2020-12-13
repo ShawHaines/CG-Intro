@@ -94,7 +94,7 @@ int sphere(Mesh& target, double radius, GLint stacks, GLint slices) {
         f.push_back(face.updated());
     }
     // stackwise add facets in the middle.
-    for (int j = 1; j < stacks-1; j++)
+    for (int j = 1; j < stacks - 1; j++)
         for (int i = 0; i < slices; i++) {
             int k = (i + 1) % slices;
             Face face;
@@ -122,18 +122,9 @@ int sphere(Mesh& target, double radius, GLint stacks, GLint slices) {
  * draws one hexagonal plane on the xy plane, centered at the origin.
  * Side length of the hexagon is given.
  * */
-void wing(GLdouble sideLength = 1.5) {
-    const GLdouble root3 = sqrt(3);
-    // all scaled by factor 2 for the convenience of representations.
-    GLdouble vertices[6][2] = {{1, root3},   {2, 0},  {1, -root3},
-                               {-1, -root3}, {-2, 0}, {-1, root3}};
-    for (int i = 0; i < 6; i++)
-        for (int j = 0; j < 2; j++) vertices[i][j] *= sideLength / 2.0;
-    glColor3d(1, 1, 1);
-    glBegin(GL_POLYGON);
-    for (int i = 0; i < 6; i++) glVertex2dv(vertices[i]);
-    glEnd();
-    return;
+int wing(Mesh& target, GLdouble sideLength = 1.5, GLdouble thickness=0.1) {
+    // a hexagon is approximately a circle...
+    return cylinder(target,sideLength,thickness,6);
 }
 
 // TODO: write Node... stop registering a mesh for every bloody redisplay!
@@ -153,7 +144,7 @@ void drawUFO() {
     if (first) {
         sphere(sphereMesh, 1.0, slices, slices);
         cylinder(cylinderMesh, 0.5, cylinderHeight / 2, slices);
-        // wing(wingMesh,1.5);
+        wing(wingMesh, 1.5,0.1);
     }
     sphereMesh.display();
     // drawing symmetric shapes loop
@@ -162,18 +153,12 @@ void drawUFO() {
         cylinderMesh.display();
         glPushMatrix();
         glTranslated(0, 0, cylinderHeight / 2);
-        // wing(1.5);
+        wingMesh.display();
         glPopMatrix();
 
         // reflection about the xy-plane.
         glScaled(1, 1, -1);
     }
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslated(3, 0, 0);
-    glutSolidCylinder(0.5, 2.0, slices, slices);
-    glTranslated(-3, 0, 0);
     glPopMatrix();
 
     glPopMatrix();
