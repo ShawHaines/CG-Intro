@@ -18,18 +18,23 @@ class Vector{
     Vector(GLdouble x=0, GLdouble y=0, GLdouble z=1):end(x,y,z){};
     Vector(Point& p):end(p){};
 
-    const GLdouble& operator[](int i) const;
-    GLdouble& operator[](int i);
-    
     double norm() const;
     double dot(const Vector& v) const;
     int normalize();
+    Vector& normalized();
     bool isZero();
+    const GLdouble& operator[](int i) const;
+    GLdouble& operator[](int i);
+    Vector operator-()const;
+    friend Vector operator+(const Vector& v1,const Vector& v2);
+    friend Vector operator-(const Vector& v1,const Vector& v2);
+    friend Vector operator*(const GLdouble x, const Vector& v);
+    friend Vector operator*(const Vector& v, const GLdouble x);
+    friend Vector cross(const Vector& v1, const Vector& v2);
+    friend double dot(const Vector& v1, const Vector& v2);
 };
 
-Vector cross(const Vector& v1, const Vector& v2);
 
-double dot(const Vector& v1, const Vector& v2);
 double norm(const Vector& v);
 // Vector normalized(Vector& v);
 
