@@ -21,8 +21,13 @@ class Face:public std::list<pVertex>{
 public:
     // Face():Face::list(){};
     using list::list;
-    Vector normal;
+    // automatically calculate the normalized normal vector based on 3 points. 
+    int update();
+    // returns a reference so that the work can be passed on in a concise grammar.
+    Face& updated();
     int display()const;
+private:
+    Vector normal;
 };
 
 class Mesh{
