@@ -138,6 +138,7 @@ void wing(GLdouble sideLength = 1.5) {
 
 // TODO: write Node... stop registering a mesh for every bloody redisplay!
 void drawUFO() {
+    static bool first=true;
     GLdouble offset[] = {0, 0, 0};
     const int slices = 50;
     glMatrixMode(GL_MODELVIEW);
@@ -167,11 +168,15 @@ void drawUFO() {
     glTranslated(3, 0, 0);
     glutSolidCylinder(0.5, 2.0, slices, slices);
     glTranslated(-3, 0, 0);
-    Mesh mesh;
-    cylinder(mesh, 0.5, 2.0, slices, 0);
-    sphere(mesh, 0.8, slices, slices);
+    static Mesh mesh;
+    // only generate the mesh once.
+    if (first){
+        cylinder(mesh, 0.5, 2.0, slices, 0);
+        sphere(mesh, 0.8, slices, slices);
+    }
     mesh.display();
     glPopMatrix();
 
     glPopMatrix();
+    first=false;
 }
