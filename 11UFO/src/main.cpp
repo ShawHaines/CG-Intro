@@ -152,7 +152,7 @@ void init() {
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
     // This line of code activates wireframe mode.
-    glPolygonMode(GL_BACK,GL_LINE);
+    // glPolygonMode(GL_BACK,GL_LINE);
     setPosition(initPos);
 }
 
