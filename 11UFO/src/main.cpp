@@ -99,7 +99,7 @@ void solarDisplay() {
     glPushMatrix();
 
     drawAxis();
-    drawUFO();
+    // drawUFO();
     // seems that gluLookAt should be applied first. Even if you don't 
     // declare it, the system will automatically adopt a gluLookAt(0,0,0, 0,0,-1, 0,1,0)
     gluLookAt(0, 0, 0, 0, 0, 100, 0.0, -1.0, 0.0);

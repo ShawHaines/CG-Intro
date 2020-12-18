@@ -45,3 +45,10 @@ add_executable(UFO
     src/UFO.cpp
     src/main.cpp
 )
+
+add_executable(Shading
+    src/Astroid.cpp
+    src/geometry.cpp
+    src/Model.cpp
+    src/main.cpp
+)
