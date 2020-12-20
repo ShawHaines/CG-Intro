@@ -10,6 +10,7 @@
 static double orbitWidth = 0.1;
 static int slices = 50;
 static double dt = 0.015;
+extern GLdouble view[16];
 
 // converts radians to degrees.
 double degrees(double rad) { return rad * 180.0 / M_PI; }
@@ -25,6 +26,7 @@ int Orbit::display() {
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glRotated(90, 1, 0, 0);
+    glMultMatrixd(view);
     glColor3dv(color);
     glutSolidTorus(orbitWidth, radius, slices, slices);
     glPopMatrix();
@@ -38,7 +40,7 @@ Astroid::Astroid(double r, double orbitR, double _period, double nx, double ny,
 }
 
 int Astroid::display() {
-    // Assuming that the MODEL matrix has already been set to the center.
+    // Assuming that the MODEL matrix has already been set to the center of the orbit.
     glMatrixMode(GL_MODELVIEW);
     // get the plane by rotating according to a cross product.
     Vector upVector(0, -1, 0);
@@ -49,12 +51,16 @@ int Astroid::display() {
         double angle = degrees(acos(orbit.normal.dot(upVector)));
         glRotated(angle, axis.end[0], axis.end[1], axis.end[2]);
     }
+    // now our origin is in the center of the orbit, and the z axis is aligned with the normal of the orbit.
     orbit.display();
     // the angle is defined in degrees...
     glRotated(degrees(phi), 0, -1, 0);
     glTranslated(orbit.radius, 0, 0);
     glColor3dv(color);
+    glPushMatrix();
+    glMultMatrixd(view);
     glutSolidSphere(radius, slices, slices);
+    glPopMatrix();
     for (auto i = satellites.begin(); i != satellites.end(); i++) {
         (*i)->display();
     }

@@ -39,7 +39,9 @@ static GLdouble pitchMin = -87, pitchMax = 87;
 
 // star.
 static Astroid* sun = NULL;
-static GLdouble initPos[]={0,0,15};
+static GLdouble initPos[]={0,0,100};
+// view matrix, note the column order.
+GLdouble view[16]={1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1};
 
 // ----------------------function declarations----------------------------
 
@@ -99,6 +101,10 @@ int addAstroids() {
 }
 
 void drawAxis() {
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glMultMatrixd(view);
+
     glBegin(GL_LINES);
     GLfloat originalLineWidth;
     glGetFloatv(GL_LINE_WIDTH, &originalLineWidth);
@@ -114,6 +120,7 @@ void drawAxis() {
     glVertex3d(0.0, 0.0, 100.0);  // z axis.
     glLineWidth(originalLineWidth);
     glEnd();
+    glPopMatrix();
     return;
 }
 
@@ -126,7 +133,7 @@ void solarDisplay() {
     // declare it, the system will automatically adopt a gluLookAt(0,0,0,
     // 0,0,-1, 0,1,0)
     // gluLookAt(0, 0, 0, 0, 0, 100, 0.0, 1.0, 0.0);
-    setPosition(initPos);
+    // setPosition(initPos);
 
     drawAxis();
     // drawUFO();
@@ -178,6 +185,8 @@ void init() {
 
     // This setting looks much nicer. Have ambient and diffuse material property track the current color.
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+
+    setPosition(initPos);
 
     // This line of code activates wireframe mode.
     // glPolygonMode(GL_BACK,GL_LINE);
@@ -247,7 +256,12 @@ void keyPressed(unsigned char key, int mouseX, int mouseY) {
             break;
     }
     glMatrixMode(GL_MODELVIEW);
+    // modifying view matrix... A weird way to use OpenGL's native transformations..
+    glPushMatrix();
+    glLoadMatrixd(view);
     glTranslated(-x, -y, -z);
+    glGetDoublev(GL_MODELVIEW_MATRIX,view);
+    glPopMatrix();
     glutPostRedisplay();
 }
 
@@ -266,9 +280,13 @@ void mouseMove(int x, int y) {
     }
     while (yaw >= 360) yaw -= 360;
     glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadMatrixd(view);
     // be careful with the signs!
     glRotated(dYaw, 0.0, 1.0, 0.0);
     glRotated(dPitch, 1.0, 0.0, 0.0);
+    glGetDoublev(GL_MODELVIEW_MATRIX,view);
+    glPopMatrix();
     glutPostRedisplay();
     return;
 }
