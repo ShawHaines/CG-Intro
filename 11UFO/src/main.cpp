@@ -46,6 +46,7 @@ static GLdouble view[16];
 static void init();
 // set lighting to make the scene nicer.
 static void setLighting();
+static void setMaterial();
 static void setPosition(GLdouble* position);
 // add stars to the solar system. The only root of the tree is a sun.
 static int addAstroids();
@@ -138,47 +139,52 @@ void setPosition(GLdouble* position){
     return;
 }
 
-// set lighting to make the scene nicer.
 void setLighting(){
+    GLfloat light_position[] = {0, 0, 0, 1};  // lighting position, 1 for point source
+    GLfloat white_light[] = {1., 1., 1., 1.0}; // white...
+    GLfloat Light_Model_Ambient[] = {0.2, 0.2, 0.2, 1.0};  // ambient light.
+
+    // light#0 is the light from the sun.
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);   // Diffusing light
+    glLightfv(GL_LIGHT0, GL_SPECULAR, white_light);  // Specular light
+
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, Light_Model_Ambient);  // ambient light. Set all over the scene.
+
+    glEnable(GL_LIGHTING);    // Enable lighting.
+    glEnable(GL_LIGHT0);      // Enable light#0
+}
+
+void setMaterial(){
     // reflexibility
     GLfloat mat_specular[] = {0.633, 0.727811, 0.633,
                               0.001};       // mirror reflex coefficient
     GLfloat mat_shininess[] = {0.2 * 128};  // highlight
     GLfloat mat_ambient[] = {0.0215, 0.175, 0.0215, 1.0};
     GLfloat mat_diffuse[] = {0.0757, 0.614, 0.07568, 1.0};
-    GLfloat light_position[] = {0, 0, 0, 1};  // lighting position
-    GLfloat white_light[] = {1., 1., 1., 1.0};
-    GLfloat Light_Model_Ambient[] = {0.2, 0.2, 0.2, 1.0};  // ambient light.
-
-    glClearColor(0.0, 0.0, 0.0, 0.0);  // background color
-    glShadeModel(GL_SMOOTH);
-
+    GLfloat mat_emission[] = {0.1,0.1,0.1,1};
     // Material properties.
     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
     glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
     glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
-    // lighting. Light position is fixed at eye transform?
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);   // Diffusing light
-    glLightfv(GL_LIGHT0, GL_SPECULAR, white_light);  // Specular light
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT,
-                   Light_Model_Ambient);  // ambient light.
+    // glMaterialfv(GL_FRONT,GL_EMISSION, mat_emission);
 
     glEnable(GL_COLOR_MATERIAL);
-    glEnable(GL_LIGHTING);    // Enable lighting.
-    glEnable(GL_LIGHT0);      // Enable light#0
-    glEnable(GL_DEPTH_TEST);  // Enable Depth test.
-
     // This setting looks much nicer. Have ambient and diffuse material property
     // track the current color.
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-}
+} 
 
 void init() {
-    setLighting();
+    glClearColor(0.0, 0.0, 0.0, 0.0);  // background color
+    glShadeModel(GL_SMOOTH);
     // This line of code activates wireframe mode.
     // glPolygonMode(GL_BACK,GL_LINE);
+    glEnable(GL_DEPTH_TEST);  // Enable Depth test.
+
+    setLighting();
+    setMaterial();
     addAstroids();
     setPosition(initPos);
 }
