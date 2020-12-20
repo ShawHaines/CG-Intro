@@ -91,11 +91,12 @@ int addAstroids() {
     saturn->satellites.push_back(saturnRing);
     // style setting.
     earth->setColor(0, 0, 1, 1);
-    mercury->setColor(0.4, 0.4, 0.4, 1);
+    mercury->setColor(1.0, 0.5, 0.0, 1);
     moon->setColor(0.8, 0.8, 0.8, 1);
     jupyter->setColor(189 / 255.0, 158 / 255.0, 125 / 255.0, 1);
     saturn->setColor(189 / 255.0, 158 / 255.0, 125 / 255.0, 1);
-    sun->setColor(1, 0, 0, 1);
+    sun->setColor(1, 1, 0.8, 1);
+    sun->emission=true;
     return 0;
 }
 
@@ -120,14 +121,17 @@ void drawAxis() {
 
 void solarDisplay() {
     // 1 stands for point light, while 0 stands for directional source.
-    GLfloat light_position[4]={0,0,0,1};
+    GLfloat sun_light[4]={0,0,0,1};
+    // directional light from the upper y direction.
+    GLfloat global_light[4]={0,1,0,0};
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
-
+    
     glPushMatrix();
     drawAxis();
     // drawUFO();
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    glLightfv(GL_LIGHT0, GL_POSITION, sun_light);
+    glLightfv(GL_LIGHT1, GL_POSITION, global_light);
     sun->display();
     glPopMatrix();
     glutSwapBuffers();
@@ -142,17 +146,22 @@ void setPosition(GLdouble* position){
 void setLighting(){
     GLfloat light_position[] = {0, 0, 0, 1};  // lighting position, 1 for point source
     GLfloat white_light[] = {1., 1., 1., 1.0}; // white...
-    GLfloat Light_Model_Ambient[] = {0.2, 0.2, 0.2, 1.0};  // ambient light.
+    GLfloat weak_light[] = {0.1, 0.1, 0.1, 1.0}; // weaker than white.
+    GLfloat Light_Model_Ambient[] = {0.1, 0.1, 0.1, 1.0};  // ambient light.
 
     // light#0 is the light from the sun.
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    // glLightfv(GL_LIGHT0, GL_POSITION, light_position);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);   // Diffusing light
     glLightfv(GL_LIGHT0, GL_SPECULAR, white_light);  // Specular light
+    // light#1 is a directional source from above.
+    glLightfv(GL_LIGHT1,GL_DIFFUSE,weak_light);
+    glLightfv(GL_LIGHT1,GL_SPECULAR,weak_light);
 
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, Light_Model_Ambient);  // ambient light. Set all over the scene.
 
     glEnable(GL_LIGHTING);    // Enable lighting.
     glEnable(GL_LIGHT0);      // Enable light#0
+    glEnable(GL_LIGHT1);
 }
 
 void setMaterial(){
