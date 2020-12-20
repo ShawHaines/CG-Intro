@@ -186,8 +186,13 @@ void init() {
     // This setting looks much nicer. Have ambient and diffuse material property track the current color.
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
     setPosition(initPos);
-
+    glGetDoublev(GL_MODELVIEW_MATRIX,view);
+    glPopMatrix();
+    
     // This line of code activates wireframe mode.
     // glPolygonMode(GL_BACK,GL_LINE);
 }
@@ -258,8 +263,9 @@ void keyPressed(unsigned char key, int mouseX, int mouseY) {
     glMatrixMode(GL_MODELVIEW);
     // modifying view matrix... A weird way to use OpenGL's native transformations..
     glPushMatrix();
-    glLoadMatrixd(view);
+    glLoadIdentity();
     glTranslated(-x, -y, -z);
+    glMultMatrixd(view);
     glGetDoublev(GL_MODELVIEW_MATRIX,view);
     glPopMatrix();
     glutPostRedisplay();
@@ -281,10 +287,11 @@ void mouseMove(int x, int y) {
     while (yaw >= 360) yaw -= 360;
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glLoadMatrixd(view);
+    glLoadIdentity();
     // be careful with the signs!
     glRotated(dYaw, 0.0, 1.0, 0.0);
     glRotated(dPitch, 1.0, 0.0, 0.0);
+    glMultMatrixd(view);
     glGetDoublev(GL_MODELVIEW_MATRIX,view);
     glPopMatrix();
     glutPostRedisplay();
