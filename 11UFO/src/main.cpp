@@ -43,16 +43,16 @@ static GLdouble initPos[]={0,0,15};
 static GLdouble view[16];
 // ----------------------function declarations----------------------------
 
-extern void drawUFO();
-
+static void init();
+// set lighting to make the scene nicer.
+static void setLighting();
+static void setPosition(GLdouble* position);
 // add stars to the solar system. The only root of the tree is a sun.
 static int addAstroids();
-
-// draw auxilary axes.
 static void solarDisplay();
+// draw auxilary axes.
 static void drawAxis();
-static void init();
-void setPosition(GLdouble* position);
+extern void drawUFO();
 
 // interface callbacks
 
@@ -118,25 +118,19 @@ void drawAxis() {
 }
 
 void solarDisplay() {
+    // 1 stands for point light, while 0 stands for directional source.
+    GLfloat light_position[4]={0,0,0,1};
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
 
     glPushMatrix();
-    // seems that gluLookAt should be applied first. Even if you don't
-    // declare it, the system will automatically adopt a gluLookAt(0,0,0,
-    // 0,0,-1, 0,1,0)
-    // gluLookAt(0, 0, 0, 0, 0, 100, 0.0, 1.0, 0.0);
-    setPosition(initPos);
-
     drawAxis();
     // drawUFO();
-    
-
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
     sun->display();
     glPopMatrix();
     glutSwapBuffers();
 }
-
 
 void setPosition(GLdouble* position){
     glMatrixMode(GL_MODELVIEW);
@@ -145,7 +139,7 @@ void setPosition(GLdouble* position){
 }
 
 // set lighting to make the scene nicer.
-void init() {
+void setLighting(){
     // reflexibility
     GLfloat mat_specular[] = {0.633, 0.727811, 0.633,
                               0.001};       // mirror reflex coefficient
@@ -176,11 +170,17 @@ void init() {
     glEnable(GL_LIGHT0);      // Enable light#0
     glEnable(GL_DEPTH_TEST);  // Enable Depth test.
 
-    // This setting looks much nicer. Have ambient and diffuse material property track the current color.
+    // This setting looks much nicer. Have ambient and diffuse material property
+    // track the current color.
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+}
 
+void init() {
+    setLighting();
     // This line of code activates wireframe mode.
     // glPolygonMode(GL_BACK,GL_LINE);
+    addAstroids();
+    setPosition(initPos);
 }
 
 int move(Point& p, GLdouble dx, GLdouble dy, GLdouble dz) {
@@ -309,7 +309,7 @@ int main(int argc, char** argv) {
     glutInitWindowPosition(100, 100);
     glutCreateWindow(argv[0]);
     init();
-    addAstroids();
+    // register callback functions.
     glutDisplayFunc(solarDisplay);
     glutReshapeFunc(reshape);
     glutMouseFunc(mouse);
@@ -318,6 +318,7 @@ int main(int argc, char** argv) {
     glutMouseWheelFunc(mouseWheel);
     // glutTimerFunc(100,timer,0);
     glutTimerFunc(interval, timer, 0);
+
     glutMainLoop();
     return 0;
 }
