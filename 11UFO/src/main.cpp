@@ -39,9 +39,36 @@ static GLdouble pitchMin = -87, pitchMax = 87;
 
 // star.
 static Astroid* sun = NULL;
-static GLdouble initPos[]={0,0,100};
+static GLdouble initPos[]={0,0,15};
+
+// ----------------------function declarations----------------------------
+
+extern void drawUFO();
 
 // add stars to the solar system. The only root of the tree is a sun.
+static int addAstroids();
+
+// draw auxilary axes.
+static void solarDisplay();
+static void drawAxis();
+static void init();
+void setPosition(GLdouble* position);
+
+// interface callbacks
+
+void reshape(int w, int h);
+void timer(int value);
+// mouse event, triggered when mouse was clicked.
+static void mouse(int button, int state, int x, int y);
+// mouse motion event, triggered when a mouse key is pressed and mouse is moving.
+void mouseMove(int x, int y);
+void mouseWheel(int wheel, int direction, int x, int y);
+// keyboard event callback.
+static void keyPressed(unsigned char key, int mouseX,int mouseY);
+
+// -----------------------------------------------------------------------
+
+
 int addAstroids() {
     sun = new Astroid(10, 0, 1e6);
     // normal co-planar orbit test case.
@@ -71,7 +98,6 @@ int addAstroids() {
     return 0;
 }
 
-// draw auxilary axes.
 void drawAxis() {
     glBegin(GL_LINES);
     GLfloat originalLineWidth;
@@ -91,18 +117,20 @@ void drawAxis() {
     return;
 }
 
-extern void drawUFO();
-
 void solarDisplay() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
+
     glPushMatrix();
+    // seems that gluLookAt should be applied first. Even if you don't
+    // declare it, the system will automatically adopt a gluLookAt(0,0,0,
+    // 0,0,-1, 0,1,0)
+    // gluLookAt(0, 0, 0, 0, 0, 100, 0.0, 1.0, 0.0);
+    setPosition(initPos);
 
     drawAxis();
     // drawUFO();
-    // seems that gluLookAt should be applied first. Even if you don't 
-    // declare it, the system will automatically adopt a gluLookAt(0,0,0, 0,0,-1, 0,1,0)
-    gluLookAt(0, 0, 0, 0, 0, 100, 0.0, -1.0, 0.0);
+    
 
     sun->display();
     glPopMatrix();
@@ -124,19 +152,19 @@ void init() {
     GLfloat mat_shininess[] = {0.2 * 128};  // highlight
     GLfloat mat_ambient[] = {0.0215, 0.175, 0.0215, 1.0};
     GLfloat mat_diffuse[] = {0.0757, 0.614, 0.07568, 1.0};
-    GLfloat light_position[] = {0, 50, 0, 0.0};  // lighting position (1,1,1).
-    GLfloat white_light[] = {1.0, 1.0, 1.0, 1.0};
-    GLfloat Light_Model_Ambient[] = {0.2, 0.2, 0.2, 1.0};  // ambiant light.
+    GLfloat light_position[] = {0, 0, 0, 1};  // lighting position
+    GLfloat white_light[] = {1., 1., 1., 1.0};
+    GLfloat Light_Model_Ambient[] = {0.2, 0.2, 0.2, 1.0};  // ambient light.
 
     glClearColor(0.0, 0.0, 0.0, 0.0);  // background color
-    glShadeModel(GL_FLAT);
+    glShadeModel(GL_SMOOTH);
 
     // Material properties.
     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
     glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
     glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
-    // lighting.
+    // lighting. Light position is fixed at eye transform?
     glLightfv(GL_LIGHT0, GL_POSITION, light_position);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);   // Diffusing light
     glLightfv(GL_LIGHT0, GL_SPECULAR, white_light);  // Specular light
@@ -148,12 +176,11 @@ void init() {
     glEnable(GL_LIGHT0);      // Enable light#0
     glEnable(GL_DEPTH_TEST);  // Enable Depth test.
 
-    // This setting looks much nicer.
+    // This setting looks much nicer. Have ambient and diffuse material property track the current color.
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 
     // This line of code activates wireframe mode.
     // glPolygonMode(GL_BACK,GL_LINE);
-    setPosition(initPos);
 }
 
 int move(Point& p, GLdouble dx, GLdouble dy, GLdouble dz) {
@@ -183,7 +210,6 @@ void timer(int value) {
     glutTimerFunc(interval, timer, 0);
 }
 
-// mouse event, triggered when mouse was clicked.
 void mouse(int button, int state, int x, int y) {
     switch (button) {
         case GLUT_LEFT_BUTTON:
@@ -197,7 +223,6 @@ void mouse(int button, int state, int x, int y) {
     return;
 }
 
-// keyboard event callback.
 void keyPressed(unsigned char key, int mouseX, int mouseY) {
     GLdouble x = 0, y = 0, z = 0;
     GLdouble step = 1.0;
@@ -242,7 +267,7 @@ void mouseMove(int x, int y) {
     while (yaw >= 360) yaw -= 360;
     glMatrixMode(GL_MODELVIEW);
     // be careful with the signs!
-    glRotated(dYaw, 0.0, -1.0, 0.0);
+    glRotated(dYaw, 0.0, 1.0, 0.0);
     glRotated(dPitch, 1.0, 0.0, 0.0);
     glutPostRedisplay();
     return;
