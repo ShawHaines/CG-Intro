@@ -40,7 +40,7 @@ static GLdouble pitchMin = -87, pitchMax = 87;
 // star.
 static Astroid* sun = NULL;
 static GLdouble initPos[]={0,0,15};
-
+static GLdouble view[16];
 // ----------------------function declarations----------------------------
 
 extern void drawUFO();
@@ -247,7 +247,12 @@ void keyPressed(unsigned char key, int mouseX, int mouseY) {
             break;
     }
     glMatrixMode(GL_MODELVIEW);
+    // FIXME: You need to insert the matrix into the foremost section of the
+    // transformation.
+    glGetDoublev(GL_MODELVIEW_MATRIX,view);
+    glLoadIdentity();
     glTranslated(-x, -y, -z);
+    glMultMatrixd(view);
     glutPostRedisplay();
 }
 
@@ -265,10 +270,14 @@ void mouseMove(int x, int y) {
         dPitch = 0;
     }
     while (yaw >= 360) yaw -= 360;
+    // FIXME: You need to insert the matrix into the foremost section of the transformation.
     glMatrixMode(GL_MODELVIEW);
+    glGetDoublev(GL_MODELVIEW_MATRIX,view);
+    glLoadIdentity();
     // be careful with the signs!
     glRotated(dYaw, 0.0, 1.0, 0.0);
     glRotated(dPitch, 1.0, 0.0, 0.0);
+    glMultMatrixd(view);
     glutPostRedisplay();
     return;
 }
