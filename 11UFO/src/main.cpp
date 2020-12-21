@@ -39,9 +39,37 @@ static GLdouble pitchMin = -87, pitchMax = 87;
 
 // star.
 static Astroid* sun = NULL;
-static GLdouble initPos[]={0,0,100};
+static GLdouble initPos[]={0,0,15};
+static GLdouble view[16];
+// ----------------------function declarations----------------------------
 
+static void init();
+// set lighting to make the scene nicer.
+static void setLighting();
+static void setMaterial();
+static void setPosition(GLdouble* position);
 // add stars to the solar system. The only root of the tree is a sun.
+static int addAstroids();
+static void solarDisplay();
+// draw auxilary axes.
+static void drawAxis();
+extern void drawUFO();
+
+// interface callbacks
+
+void reshape(int w, int h);
+void timer(int value);
+// mouse event, triggered when mouse was clicked.
+static void mouse(int button, int state, int x, int y);
+// mouse motion event, triggered when a mouse key is pressed and mouse is moving.
+void mouseMove(int x, int y);
+void mouseWheel(int wheel, int direction, int x, int y);
+// keyboard event callback.
+static void keyPressed(unsigned char key, int mouseX,int mouseY);
+
+// -----------------------------------------------------------------------
+
+
 int addAstroids() {
     sun = new Astroid(10, 0, 1e6);
     // normal co-planar orbit test case.
@@ -63,15 +91,15 @@ int addAstroids() {
     saturn->satellites.push_back(saturnRing);
     // style setting.
     earth->setColor(0, 0, 1, 1);
-    mercury->setColor(0.4, 0.4, 0.4, 1);
+    mercury->setColor(1.0, 0.5, 0.0, 1);
     moon->setColor(0.8, 0.8, 0.8, 1);
     jupyter->setColor(189 / 255.0, 158 / 255.0, 125 / 255.0, 1);
     saturn->setColor(189 / 255.0, 158 / 255.0, 125 / 255.0, 1);
-    sun->setColor(1, 0, 0, 1);
+    sun->setColor(1, 1, 0.8, 1);
+    sun->emission=true;
     return 0;
 }
 
-// draw auxilary axes.
 void drawAxis() {
     glBegin(GL_LINES);
     GLfloat originalLineWidth;
@@ -91,24 +119,23 @@ void drawAxis() {
     return;
 }
 
-extern void drawUFO();
-
 void solarDisplay() {
+    // 1 stands for point light, while 0 stands for directional source.
+    GLfloat sun_light[4]={0,0,0,1};
+    // directional light from the upper y direction.
+    GLfloat global_light[4]={0,1,0,0};
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
+    
     glPushMatrix();
-
     drawAxis();
-    drawUFO();
-    // seems that gluLookAt should be applied first. Even if you don't 
-    // declare it, the system will automatically adopt a gluLookAt(0,0,0, 0,0,-1, 0,1,0)
-    gluLookAt(0, 0, 0, 0, 0, 100, 0.0, -1.0, 0.0);
-
+    // drawUFO();
+    glLightfv(GL_LIGHT0, GL_POSITION, sun_light);
+    glLightfv(GL_LIGHT1, GL_POSITION, global_light);
     sun->display();
     glPopMatrix();
     glutSwapBuffers();
 }
-
 
 void setPosition(GLdouble* position){
     glMatrixMode(GL_MODELVIEW);
@@ -116,43 +143,58 @@ void setPosition(GLdouble* position){
     return;
 }
 
-// set lighting to make the scene nicer.
-void init() {
+void setLighting(){
+    GLfloat light_position[] = {0, 0, 0, 1};  // lighting position, 1 for point source
+    GLfloat white_light[] = {1., 1., 1., 1.0}; // white...
+    GLfloat weak_light[] = {0.1, 0.1, 0.1, 1.0}; // weaker than white.
+    GLfloat Light_Model_Ambient[] = {0.1, 0.1, 0.1, 1.0};  // ambient light.
+
+    // light#0 is the light from the sun.
+    // glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);   // Diffusing light
+    glLightfv(GL_LIGHT0, GL_SPECULAR, white_light);  // Specular light
+    // light#1 is a directional source from above.
+    glLightfv(GL_LIGHT1,GL_DIFFUSE,weak_light);
+    glLightfv(GL_LIGHT1,GL_SPECULAR,weak_light);
+
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, Light_Model_Ambient);  // ambient light. Set all over the scene.
+
+    glEnable(GL_LIGHTING);    // Enable lighting.
+    glEnable(GL_LIGHT0);      // Enable light#0
+    glEnable(GL_LIGHT1);
+}
+
+void setMaterial(){
     // reflexibility
     GLfloat mat_specular[] = {0.633, 0.727811, 0.633,
                               0.001};       // mirror reflex coefficient
     GLfloat mat_shininess[] = {0.2 * 128};  // highlight
     GLfloat mat_ambient[] = {0.0215, 0.175, 0.0215, 1.0};
     GLfloat mat_diffuse[] = {0.0757, 0.614, 0.07568, 1.0};
-    GLfloat light_position[] = {0, 50, 0, 0.0};  // lighting position (1,1,1).
-    GLfloat white_light[] = {1.0, 1.0, 1.0, 1.0};
-    GLfloat Light_Model_Ambient[] = {0.2, 0.2, 0.2, 1.0};  // ambiant light.
-
-    glClearColor(0.0, 0.0, 0.0, 0.0);  // background color
-    glShadeModel(GL_FLAT);
-
+    GLfloat mat_emission[] = {0.1,0.1,0.1,1};
     // Material properties.
     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
     glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
     glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
-    // lighting.
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);   // Diffusing light
-    glLightfv(GL_LIGHT0, GL_SPECULAR, white_light);  // Specular light
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT,
-                   Light_Model_Ambient);  // ambient light.
+    // glMaterialfv(GL_FRONT,GL_EMISSION, mat_emission);
 
     glEnable(GL_COLOR_MATERIAL);
-    glEnable(GL_LIGHTING);    // Enable lighting.
-    glEnable(GL_LIGHT0);      // Enable light#0
-    glEnable(GL_DEPTH_TEST);  // Enable Depth test.
-
-    // This setting looks much nicer.
+    // This setting looks much nicer. Have ambient and diffuse material property
+    // track the current color.
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+} 
 
+void init() {
+    glClearColor(0.0, 0.0, 0.0, 0.0);  // background color
+    glShadeModel(GL_SMOOTH);
     // This line of code activates wireframe mode.
     // glPolygonMode(GL_BACK,GL_LINE);
+    glEnable(GL_DEPTH_TEST);  // Enable Depth test.
+
+    setLighting();
+    setMaterial();
+    addAstroids();
     setPosition(initPos);
 }
 
@@ -183,7 +225,6 @@ void timer(int value) {
     glutTimerFunc(interval, timer, 0);
 }
 
-// mouse event, triggered when mouse was clicked.
 void mouse(int button, int state, int x, int y) {
     switch (button) {
         case GLUT_LEFT_BUTTON:
@@ -197,7 +238,6 @@ void mouse(int button, int state, int x, int y) {
     return;
 }
 
-// keyboard event callback.
 void keyPressed(unsigned char key, int mouseX, int mouseY) {
     GLdouble x = 0, y = 0, z = 0;
     GLdouble step = 1.0;
@@ -222,7 +262,12 @@ void keyPressed(unsigned char key, int mouseX, int mouseY) {
             break;
     }
     glMatrixMode(GL_MODELVIEW);
+    // FIXME: You need to insert the matrix into the foremost section of the
+    // transformation.
+    glGetDoublev(GL_MODELVIEW_MATRIX,view);
+    glLoadIdentity();
     glTranslated(-x, -y, -z);
+    glMultMatrixd(view);
     glutPostRedisplay();
 }
 
@@ -240,10 +285,14 @@ void mouseMove(int x, int y) {
         dPitch = 0;
     }
     while (yaw >= 360) yaw -= 360;
+    // FIXME: You need to insert the matrix into the foremost section of the transformation.
     glMatrixMode(GL_MODELVIEW);
+    glGetDoublev(GL_MODELVIEW_MATRIX,view);
+    glLoadIdentity();
     // be careful with the signs!
-    glRotated(dYaw, 0.0, -1.0, 0.0);
+    glRotated(dYaw, 0.0, 1.0, 0.0);
     glRotated(dPitch, 1.0, 0.0, 0.0);
+    glMultMatrixd(view);
     glutPostRedisplay();
     return;
 }
@@ -275,7 +324,7 @@ int main(int argc, char** argv) {
     glutInitWindowPosition(100, 100);
     glutCreateWindow(argv[0]);
     init();
-    addAstroids();
+    // register callback functions.
     glutDisplayFunc(solarDisplay);
     glutReshapeFunc(reshape);
     glutMouseFunc(mouse);
@@ -284,6 +333,7 @@ int main(int argc, char** argv) {
     glutMouseWheelFunc(mouseWheel);
     // glutTimerFunc(100,timer,0);
     glutTimerFunc(interval, timer, 0);
+
     glutMainLoop();
     return 0;
 }

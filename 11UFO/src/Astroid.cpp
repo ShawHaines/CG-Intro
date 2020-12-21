@@ -33,7 +33,7 @@ int Orbit::display() {
 
 Astroid::Astroid(double r, double orbitR, double _period, double nx, double ny,
                  double nz)
-    : radius(r), phi(0), period(_period), orbit(orbitR, nx, ny, nz) {
+    : radius(r), phi(0), period(_period), orbit(orbitR, nx, ny, nz), emission(false){
     setColor(1.0, 0, 0, 1.0);
 }
 
@@ -54,7 +54,18 @@ int Astroid::display() {
     glRotated(degrees(phi), 0, -1, 0);
     glTranslated(orbit.radius, 0, 0);
     glColor3dv(color);
-    glutSolidSphere(radius, slices, slices);
+    if (emission){
+        GLfloat oldEmission[4],newEmission[4];
+        double rate=0.9;
+        for (int i=0;i<4;i++) newEmission[i]=color[i]*rate;
+
+        glGetMaterialfv(GL_FRONT,GL_EMISSION,oldEmission);
+        glMaterialfv(GL_FRONT,GL_EMISSION,newEmission);
+        glutSolidSphere(radius, slices, slices);
+        glMaterialfv(GL_FRONT,GL_EMISSION,oldEmission);
+    } else{
+        glutSolidSphere(radius, slices, slices);
+    }
     for (auto i = satellites.begin(); i != satellites.end(); i++) {
         (*i)->display();
     }
