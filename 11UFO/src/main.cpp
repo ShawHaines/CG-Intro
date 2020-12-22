@@ -42,7 +42,8 @@ static GLdouble pitchMin = -87, pitchMax = 87;
 static Astroid* sun = NULL;
 static GLdouble initPos[]={0,0,15};
 static GLdouble view[16];
-static GLint sunTexture=0;
+// Texture numbers in GL
+static GLint sunTexture,environmentTexture,jupiterTexture,saturnTexture,earthTexture,mercuryTexture,moonTexture;
 // ----------------------function declarations----------------------------
 
 static void init();
@@ -56,6 +57,8 @@ static void setTexture();
 static int addAstroids();
 static void solarDisplay();
 // draw auxilary axes.
+static void drawUVSquare(double sideLength, GLint texture);
+// supppose currently at the center of the cubic box.
 static void drawBox(double sideLength=1);
 static void drawAxis();
 extern void drawUFO();
@@ -105,7 +108,47 @@ int addAstroids() {
     return 0;
 }
 
-void drawBox(double sidelength){
+void drawBox(double sideLength){
+    glMatrixMode(GL_MODELVIEW);
+    // bottom facet (z is the normal)
+    glPushMatrix();
+    glTranslated(0,0,-sideLength/2);
+    drawUVSquare(sideLength,sunTexture);
+    glPopMatrix();
+    // top facet (-z is the normal)
+    glPushMatrix();
+    glTranslated(0,0,sideLength/2);
+    glScaled(1,1,-1);
+    drawUVSquare(sideLength,sunTexture);
+    glPopMatrix();
+    // front facet (-x is the normal)
+    glPushMatrix();
+    glTranslated(sideLength/2, 0, 0);
+    glRotated(-90,0,1,0);
+    drawUVSquare(sideLength, sunTexture);
+    glPopMatrix();
+    // back facet (x is the normal)
+    glPushMatrix();
+    glTranslated(-sideLength/2, 0, 0);
+    glRotated(90,0,1,0);
+    drawUVSquare(sideLength, sunTexture);
+    glPopMatrix();
+    // right facet (-y is the normal)
+    glPushMatrix();
+    glTranslated(0,sideLength/2,0);
+    glRotated(90,1,0,0);
+    drawUVSquare(sideLength,sunTexture);
+    glPopMatrix();
+    // left facet (y is the normal)
+    glPushMatrix();
+    glTranslated(0,-sideLength/2,0);
+    glRotated(-90,1,0,0);
+    drawUVSquare(sideLength,sunTexture);
+    glPopMatrix();
+    return;
+}
+
+void drawUVSquare(double sidelength, GLint texture){
     GLdouble vertices[4][2]={{1,1}, {-1,1}, {-1,-1}, {1,-1}};
     GLdouble vt[4][2]={{1,0}, {1,1}, {0,1}, {0,0}};
     GLdouble factor=1.0;
@@ -114,15 +157,15 @@ void drawBox(double sidelength){
     glBegin(GL_QUADS);
     // the x, y coordinates.
     glNormal3d(0,0,1);
-    // GLint oldTexture;
-    // glGetIntegerv(GL_TEXTURE_BINDING_2D,&oldTexture);
-    // std::cout<<oldTexture<<std::endl;
-    // std::cout<<sunTexture<<std::endl;
-    glBindTexture(GL_TEXTURE_2D,sunTexture);
+    GLint oldTexture;
+    glGetIntegerv(GL_TEXTURE_BINDING_2D,&oldTexture);
+    glBindTexture(GL_TEXTURE_2D,texture);
     for (int i=0;i<4;i++){
         glTexCoord2d(vertices[i][0]*factor,vertices[i][1]*factor);
         glVertex2d(vertices[i][0]*sidelength/2,vertices[i][1]*sidelength/2);
     }
+    // restore the original settings.
+    glBindTexture(GL_TEXTURE_2D,oldTexture);
     glEnd();
     glDisable(GL_TEXTURE_2D);
 }
@@ -157,10 +200,7 @@ void solarDisplay() {
     glPushMatrix();
     drawAxis();
 
-    glPushMatrix();
-    glTranslated(0,0,-100);
-    drawBox(100);
-    glPopMatrix();
+    drawBox(200);
 
     // drawUFO();
     glLightfv(GL_LIGHT0, GL_POSITION, sun_light);
@@ -221,7 +261,14 @@ void setMaterial(){
 void setTexture(){
     // glEnable(GL_TEXTURE_2D);
     // load texture, note that it's relative to the executable.
-    sunTexture=loadTexture("./img/texture/jupiter.png");
+    std::string folder="./img/texture/";
+    sunTexture=loadTexture(folder+"jupiter.png");
+    environmentTexture=loadTexture(folder+"milky_way.png");
+    jupiterTexture=loadTexture(folder+"jupiter.png");
+    saturnTexture=loadTexture(folder+"saturn.png");
+    earthTexture=loadTexture(folder+"earth.png");
+    moonTexture=loadTexture(folder+"moon.png");
+    mercuryTexture=loadTexture(folder+"mercury.png");
     return;
 }
 

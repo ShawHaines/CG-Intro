@@ -1,3 +1,3 @@
 #include <GL/freeglut.h>
 
-GLuint loadTexture(char* fileName);
+GLuint loadTexture(const std::string& fileName);

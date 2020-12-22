@@ -3,7 +3,7 @@
 #include "stb_image.h"
 #include "Texture.h"
 
-GLuint loadTexture(char* fileName) {
+GLuint loadTexture(const std::string& fileName) {
     GLuint texture;
     glEnable(GL_TEXTURE_2D);
     glGenTextures(1, &texture);
@@ -19,7 +19,7 @@ GLuint loadTexture(char* fileName) {
     // load and generate texture.
     int width, height, nrChannels;
     unsigned char *data =
-        stbi_load(fileName, &width, &height, &nrChannels, 0);
+        stbi_load(fileName.data(), &width, &height, &nrChannels, 0);
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
                      GL_UNSIGNED_BYTE, data);
