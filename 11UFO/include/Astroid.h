@@ -37,6 +37,7 @@ class Astroid {
     std::list<Astroid*> satellites;
     // TODO: Add rotation. For now we omit the rotation axis.
     bool emission;
+    GLuint texture;
    private:
     GLdouble color[4];
     // revolution period, unit is second.

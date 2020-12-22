@@ -43,7 +43,7 @@ static Astroid* sun = NULL;
 static GLdouble initPos[]={0,0,15};
 static GLdouble view[16];
 // Texture numbers in GL
-static GLint sunTexture,environmentTexture,jupiterTexture,saturnTexture,earthTexture,mercuryTexture,moonTexture;
+static GLuint sunTexture,environmentTexture,jupiterTexture,saturnTexture,earthTexture,mercuryTexture,moonTexture;
 // ----------------------function declarations----------------------------
 
 static void init();
@@ -57,7 +57,7 @@ static void setTexture();
 static int addAstroids();
 static void solarDisplay();
 // draw auxilary axes.
-static void drawUVSquare(double sideLength, GLint texture);
+static void drawUVSquare(double sideLength, GLuint texture);
 // supppose currently at the center of the cubic box.
 static void drawBox(double sideLength=1);
 static void drawAxis();
@@ -84,14 +84,14 @@ int addAstroids() {
     auto earth = new Astroid(2.5, 30, 10, 0, 1, 0);
     // non-coplanar orbit test, satellite.
     auto moon = new Astroid(1, 5, 5, 0, -10, 1);
-    auto jupyter = new Astroid(5, 75, 60, 1, 5, 0);
+    auto jupiter = new Astroid(5, 75, 60, 1, 5, 0);
     auto mercury = new Astroid(1.5, 20, 15, 0.1, 1, 0);
     auto saturn = new Astroid(3.5, 55, 100);
     // saturn ring is a satellite with 0 size...
     auto saturnRing = new Astroid(0, 5, 1e6, 1, -5, 1);
     // planets
     sun->satellites.push_back(earth);
-    sun->satellites.push_back(jupyter);
+    sun->satellites.push_back(jupiter);
     sun->satellites.push_back(mercury);
     sun->satellites.push_back(saturn);
     // satellites
@@ -99,11 +99,17 @@ int addAstroids() {
     saturn->satellites.push_back(saturnRing);
     // style setting.
     earth->setColor(0, 0, 1, 1);
+    earth->texture = earthTexture;
     mercury->setColor(1.0, 0.5, 0.0, 1);
+    mercury->texture=mercuryTexture;
     moon->setColor(0.8, 0.8, 0.8, 1);
-    jupyter->setColor(189 / 255.0, 158 / 255.0, 125 / 255.0, 1);
+    moon->texture=moonTexture;
+    jupiter->setColor(189 / 255.0, 158 / 255.0, 125 / 255.0, 1);
+    jupiter->texture=jupiterTexture;
     saturn->setColor(189 / 255.0, 158 / 255.0, 125 / 255.0, 1);
+    saturn->texture=saturnTexture;
     sun->setColor(1, 1, 0.8, 1);
+    sun->texture=sunTexture;
     sun->emission=true;
     return 0;
 }
@@ -113,59 +119,60 @@ void drawBox(double sideLength){
     // bottom facet (z is the normal)
     glPushMatrix();
     glTranslated(0,0,-sideLength/2);
-    drawUVSquare(sideLength,sunTexture);
+    drawUVSquare(sideLength,environmentTexture);
     glPopMatrix();
     // top facet (-z is the normal)
     glPushMatrix();
     glTranslated(0,0,sideLength/2);
     glScaled(1,1,-1);
-    drawUVSquare(sideLength,sunTexture);
+    drawUVSquare(sideLength,environmentTexture);
     glPopMatrix();
     // front facet (-x is the normal)
     glPushMatrix();
     glTranslated(sideLength/2, 0, 0);
     glRotated(-90,0,1,0);
-    drawUVSquare(sideLength, sunTexture);
+    drawUVSquare(sideLength, environmentTexture);
     glPopMatrix();
     // back facet (x is the normal)
     glPushMatrix();
     glTranslated(-sideLength/2, 0, 0);
     glRotated(90,0,1,0);
-    drawUVSquare(sideLength, sunTexture);
+    drawUVSquare(sideLength, environmentTexture);
     glPopMatrix();
     // right facet (-y is the normal)
     glPushMatrix();
     glTranslated(0,sideLength/2,0);
     glRotated(90,1,0,0);
-    drawUVSquare(sideLength,sunTexture);
+    drawUVSquare(sideLength,environmentTexture);
     glPopMatrix();
     // left facet (y is the normal)
     glPushMatrix();
     glTranslated(0,-sideLength/2,0);
     glRotated(-90,1,0,0);
-    drawUVSquare(sideLength,sunTexture);
+    drawUVSquare(sideLength,environmentTexture);
     glPopMatrix();
     return;
 }
 
-void drawUVSquare(double sidelength, GLint texture){
+void drawUVSquare(double sidelength, GLuint texture){
     GLdouble vertices[4][2]={{1,1}, {-1,1}, {-1,-1}, {1,-1}};
     GLdouble vt[4][2]={{1,0}, {1,1}, {0,1}, {0,0}};
     GLdouble factor=1.0;
     // FIXME: glEnable() and glDisable() must be written outside of glBegin() and glEnd()...
+    // FIXME: binding texture seems to not functioning.
     glEnable(GL_TEXTURE_2D);
     glBegin(GL_QUADS);
     // the x, y coordinates.
     glNormal3d(0,0,1);
-    GLint oldTexture;
-    glGetIntegerv(GL_TEXTURE_BINDING_2D,&oldTexture);
+    // GLint oldTexture;
+    // glGetIntegerv(GL_TEXTURE_BINDING_2D,&oldTexture);
     glBindTexture(GL_TEXTURE_2D,texture);
     for (int i=0;i<4;i++){
         glTexCoord2d(vertices[i][0]*factor,vertices[i][1]*factor);
         glVertex2d(vertices[i][0]*sidelength/2,vertices[i][1]*sidelength/2);
     }
     // restore the original settings.
-    glBindTexture(GL_TEXTURE_2D,oldTexture);
+    // glBindTexture(GL_TEXTURE_2D,oldTexture);
     glEnd();
     glDisable(GL_TEXTURE_2D);
 }
@@ -262,7 +269,7 @@ void setTexture(){
     // glEnable(GL_TEXTURE_2D);
     // load texture, note that it's relative to the executable.
     std::string folder="./img/texture/";
-    sunTexture=loadTexture(folder+"jupiter.png");
+    sunTexture=loadTexture(folder+"sun.png");
     environmentTexture=loadTexture(folder+"milky_way.png");
     jupiterTexture=loadTexture(folder+"jupiter.png");
     saturnTexture=loadTexture(folder+"saturn.png");
