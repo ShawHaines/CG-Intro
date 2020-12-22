@@ -46,10 +46,13 @@ add_executable(UFO
     src/main.cpp
 )
 
+# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${})
+# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PROJECT_SOURCE_DIR})
+
 add_executable(Texture
     src/Astroid.cpp
     src/geometry.cpp
     src/Model.cpp
-    src/main.cpp
     src/Texture.cpp
+    src/main.cpp
 )

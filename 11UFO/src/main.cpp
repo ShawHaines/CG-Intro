@@ -5,6 +5,7 @@
 // #include <Windows.h> // actually glut deals with it already.
 #include "Astroid.h"
 #include "geometry.h"
+#include "Texture.h"
 
 using namespace std;
 
@@ -41,6 +42,7 @@ static GLdouble pitchMin = -87, pitchMax = 87;
 static Astroid* sun = NULL;
 static GLdouble initPos[]={0,0,15};
 static GLdouble view[16];
+static GLint sunTexture=0;
 // ----------------------function declarations----------------------------
 
 static void init();
@@ -48,10 +50,13 @@ static void init();
 static void setLighting();
 static void setMaterial();
 static void setPosition(GLdouble* position);
+static void setTexture();
+// extern GLint loadTexture(char* fileName);
 // add stars to the solar system. The only root of the tree is a sun.
 static int addAstroids();
 static void solarDisplay();
 // draw auxilary axes.
+static void drawBox(double sideLength=1);
 static void drawAxis();
 extern void drawUFO();
 
@@ -100,6 +105,28 @@ int addAstroids() {
     return 0;
 }
 
+void drawBox(double sidelength){
+    GLdouble vertices[4][2]={{1,1}, {-1,1}, {-1,-1}, {1,-1}};
+    GLdouble vt[4][2]={{1,0}, {1,1}, {0,1}, {0,0}};
+    GLdouble factor=1.0;
+    // FIXME: glEnable() and glDisable() must be written outside of glBegin() and glEnd()...
+    glEnable(GL_TEXTURE_2D);
+    glBegin(GL_QUADS);
+    // the x, y coordinates.
+    glNormal3d(0,0,1);
+    // GLint oldTexture;
+    // glGetIntegerv(GL_TEXTURE_BINDING_2D,&oldTexture);
+    // std::cout<<oldTexture<<std::endl;
+    // std::cout<<sunTexture<<std::endl;
+    glBindTexture(GL_TEXTURE_2D,sunTexture);
+    for (int i=0;i<4;i++){
+        glTexCoord2d(vertices[i][0]*factor,vertices[i][1]*factor);
+        glVertex2d(vertices[i][0]*sidelength/2,vertices[i][1]*sidelength/2);
+    }
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+}
+
 void drawAxis() {
     glBegin(GL_LINES);
     GLfloat originalLineWidth;
@@ -129,6 +156,12 @@ void solarDisplay() {
     
     glPushMatrix();
     drawAxis();
+
+    glPushMatrix();
+    glTranslated(0,0,-100);
+    drawBox(100);
+    glPopMatrix();
+
     // drawUFO();
     glLightfv(GL_LIGHT0, GL_POSITION, sun_light);
     glLightfv(GL_LIGHT1, GL_POSITION, global_light);
@@ -185,6 +218,13 @@ void setMaterial(){
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 } 
 
+void setTexture(){
+    // glEnable(GL_TEXTURE_2D);
+    // load texture, note that it's relative to the executable.
+    sunTexture=loadTexture("./img/texture/jupiter.png");
+    return;
+}
+
 void init() {
     glClearColor(0.0, 0.0, 0.0, 0.0);  // background color
     glShadeModel(GL_SMOOTH);
@@ -194,6 +234,7 @@ void init() {
 
     setLighting();
     setMaterial();
+    setTexture();
     addAstroids();
     setPosition(initPos);
 }
