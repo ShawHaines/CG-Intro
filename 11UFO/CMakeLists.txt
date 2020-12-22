@@ -46,9 +46,10 @@ add_executable(UFO
     src/main.cpp
 )
 
-add_executable(Shading
+add_executable(Texture
     src/Astroid.cpp
     src/geometry.cpp
     src/Model.cpp
     src/main.cpp
+    src/Texture.cpp
 )
