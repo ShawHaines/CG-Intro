@@ -4,8 +4,8 @@
 #include <iostream>
 // #include <Windows.h> // actually glut deals with it already.
 #include "Astroid.h"
-#include "geometry.h"
 #include "Texture.h"
+#include "geometry.h"
 
 using namespace std;
 
@@ -40,10 +40,11 @@ static GLdouble pitchMin = -87, pitchMax = 87;
 
 // star.
 static Astroid* sun = NULL;
-static GLdouble initPos[]={0,0,15};
+static GLdouble initPos[] = {0, 0, 15};
 static GLdouble view[16];
 // Texture numbers in GL
-static GLuint sunTexture,environmentTexture,jupiterTexture,saturnTexture,earthTexture,mercuryTexture,moonTexture;
+static GLuint sunTexture, environmentTexture, jupiterTexture, saturnTexture,
+    earthTexture, mercuryTexture, moonTexture;
 // ----------------------function declarations----------------------------
 
 static void init();
@@ -59,7 +60,7 @@ static void solarDisplay();
 // draw auxilary axes.
 static void drawUVSquare(double sideLength, GLuint texture);
 // supppose currently at the center of the cubic box.
-static void drawBox(double sideLength=1);
+static void drawBox(double sideLength = 1);
 static void drawAxis();
 extern void drawUFO();
 
@@ -69,26 +70,26 @@ void reshape(int w, int h);
 void timer(int value);
 // mouse event, triggered when mouse was clicked.
 static void mouse(int button, int state, int x, int y);
-// mouse motion event, triggered when a mouse key is pressed and mouse is moving.
+// mouse motion event, triggered when a mouse key is pressed and mouse is
+// moving.
 void mouseMove(int x, int y);
 void mouseWheel(int wheel, int direction, int x, int y);
 // keyboard event callback.
-static void keyPressed(unsigned char key, int mouseX,int mouseY);
+static void keyPressed(unsigned char key, int mouseX, int mouseY);
 
 // -----------------------------------------------------------------------
 
-
 int addAstroids() {
-    sun = new Astroid(10, 0, 1e6,1e6);
+    sun = new Astroid(10, 0, 1e6, 1e2);
     // normal co-planar orbit test case.
     auto earth = new Astroid(2.5, 30, 10, 1, 0, 1, 0);
     // non-coplanar orbit test, satellite.
-    auto moon = new Astroid(1, 5, 5,1e6 , 0, -10, 1);
+    auto moon = new Astroid(1, 5, 5, 1e6, 0, -10, 1);
     auto jupiter = new Astroid(5, 75, 60, 1, 1, 5, 0);
-    auto mercury = new Astroid(1.5, 20, 15,1, 0.1, 1, 0);
-    auto saturn = new Astroid(3.5, 55,100);
+    auto mercury = new Astroid(1.5, 20, 15, 1, 0.1, 1, 0);
+    auto saturn = new Astroid(3.5, 55, 100);
     // saturn ring is a satellite with 0 size...
-    auto saturnRing = new Astroid(0, 5, 1e6,1e6, 1, -5, 1);
+    auto saturnRing = new Astroid(0, 5, 1e6, 1e6, 1, -5, 1);
     // planets
     sun->satellites.push_back(earth);
     sun->satellites.push_back(jupiter);
@@ -101,75 +102,77 @@ int addAstroids() {
     earth->setColor(0, 0, 1, 1);
     earth->texture = earthTexture;
     mercury->setColor(1.0, 0.5, 0.0, 1);
-    mercury->texture=mercuryTexture;
+    mercury->texture = mercuryTexture;
     moon->setColor(0.8, 0.8, 0.8, 1);
-    moon->texture=moonTexture;
+    moon->texture = moonTexture;
     jupiter->setColor(189 / 255.0, 158 / 255.0, 125 / 255.0, 1);
-    jupiter->texture=jupiterTexture;
+    jupiter->texture = jupiterTexture;
     saturn->setColor(189 / 255.0, 158 / 255.0, 125 / 255.0, 1);
-    saturn->texture=saturnTexture;
+    saturn->texture = saturnTexture;
     sun->setColor(1, 1, 0.8, 1);
-    sun->texture=sunTexture;
-    sun->emission=true;
+    sun->texture = sunTexture;
+    sun->emission = true;
     return 0;
 }
 
-void drawBox(double sideLength){
+void drawBox(double sideLength) {
     glMatrixMode(GL_MODELVIEW);
     // bottom facet (z is the normal)
     glPushMatrix();
-    glTranslated(0,0,-sideLength/2);
-    drawUVSquare(sideLength,environmentTexture);
+    glTranslated(0, 0, -sideLength / 2);
+    drawUVSquare(sideLength, environmentTexture);
     glPopMatrix();
     // top facet (-z is the normal)
     glPushMatrix();
-    glTranslated(0,0,sideLength/2);
-    glScaled(1,1,-1);
-    drawUVSquare(sideLength,environmentTexture);
+    glTranslated(0, 0, sideLength / 2);
+    glScaled(1, 1, -1);
+    drawUVSquare(sideLength, environmentTexture);
     glPopMatrix();
     // front facet (-x is the normal)
     glPushMatrix();
-    glTranslated(sideLength/2, 0, 0);
-    glRotated(-90,0,1,0);
+    glTranslated(sideLength / 2, 0, 0);
+    glRotated(-90, 0, 1, 0);
     drawUVSquare(sideLength, environmentTexture);
     glPopMatrix();
     // back facet (x is the normal)
     glPushMatrix();
-    glTranslated(-sideLength/2, 0, 0);
-    glRotated(90,0,1,0);
+    glTranslated(-sideLength / 2, 0, 0);
+    glRotated(90, 0, 1, 0);
     drawUVSquare(sideLength, environmentTexture);
     glPopMatrix();
     // right facet (-y is the normal)
     glPushMatrix();
-    glTranslated(0,sideLength/2,0);
-    glRotated(90,1,0,0);
-    drawUVSquare(sideLength,environmentTexture);
+    glTranslated(0, sideLength / 2, 0);
+    glRotated(90, 1, 0, 0);
+    drawUVSquare(sideLength, environmentTexture);
     glPopMatrix();
     // left facet (y is the normal)
     glPushMatrix();
-    glTranslated(0,-sideLength/2,0);
-    glRotated(-90,1,0,0);
-    drawUVSquare(sideLength,environmentTexture);
+    glTranslated(0, -sideLength / 2, 0);
+    glRotated(-90, 1, 0, 0);
+    drawUVSquare(sideLength, environmentTexture);
     glPopMatrix();
     return;
 }
 
-void drawUVSquare(double sidelength, GLuint texture){
-    GLdouble vertices[4][2]={{1,1}, {-1,1}, {-1,-1}, {1,-1}};
-    GLdouble vt[4][2]={{1,0}, {1,1}, {0,1}, {0,0}};
-    GLdouble factor=1.0;
-    // FIXME: glEnable() and glDisable() must be written outside of glBegin() and glEnd()...
+void drawUVSquare(double sidelength, GLuint texture) {
+    GLdouble vertices[4][2] = {{1, 1}, {-1, 1}, {-1, -1}, {1, -1}};
+    GLdouble vt[4][2] = {{1, 0}, {1, 1}, {0, 1}, {0, 0}};
+    GLdouble factor = 1.0;
+    // FIXME: glEnable() and glDisable() must be written outside of glBegin()
+    // and glEnd()...
     // FIXME: binding texture seems to not functioning.
     glEnable(GL_TEXTURE_2D);
     glBegin(GL_QUADS);
     // the x, y coordinates.
-    glNormal3d(0,0,1);
+    glNormal3d(0, 0, 1);
     // GLint oldTexture;
     // glGetIntegerv(GL_TEXTURE_BINDING_2D,&oldTexture);
-    glBindTexture(GL_TEXTURE_2D,texture);
-    for (int i=0;i<4;i++){
-        glTexCoord2d(vertices[i][0]*factor,vertices[i][1]*factor);
-        glVertex2d(vertices[i][0]*sidelength/2,vertices[i][1]*sidelength/2);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    for (int i = 0; i < 4; i++) {
+        glTexCoord2d(vertices[i][0] * factor, vertices[i][1] * factor);
+        glVertex2d(vertices[i][0] * sidelength / 2,
+                   vertices[i][1] * sidelength / 2);
     }
     // restore the original settings.
     // glBindTexture(GL_TEXTURE_2D,oldTexture);
@@ -198,12 +201,12 @@ void drawAxis() {
 
 void solarDisplay() {
     // 1 stands for point light, while 0 stands for directional source.
-    GLfloat sun_light[4]={0,0,0,1};
+    GLfloat sun_light[4] = {0, 0, 0, 1};
     // directional light from the upper y direction.
-    GLfloat global_light[4]={0,1,0,0};
+    GLfloat global_light[4] = {0, 1, 0, 0};
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glMatrixMode(GL_MODELVIEW);
-    
+
     glPushMatrix();
     drawAxis();
 
@@ -217,16 +220,17 @@ void solarDisplay() {
     glutSwapBuffers();
 }
 
-void setPosition(GLdouble* position){
+void setPosition(GLdouble* position) {
     glMatrixMode(GL_MODELVIEW);
-    glTranslated(-position[0],-position[1],-position[2]);
+    glTranslated(-position[0], -position[1], -position[2]);
     return;
 }
 
-void setLighting(){
-    GLfloat light_position[] = {0, 0, 0, 1};  // lighting position, 1 for point source
-    GLfloat white_light[] = {1., 1., 1., 1.0}; // white...
-    GLfloat weak_light[] = {0.1, 0.1, 0.1, 1.0}; // weaker than white.
+void setLighting() {
+    GLfloat light_position[] = {0, 0, 0,
+                                1};  // lighting position, 1 for point source
+    GLfloat white_light[] = {1., 1., 1., 1.0};             // white...
+    GLfloat weak_light[] = {0.1, 0.1, 0.1, 1.0};           // weaker than white.
     GLfloat Light_Model_Ambient[] = {0.1, 0.1, 0.1, 1.0};  // ambient light.
 
     // light#0 is the light from the sun.
@@ -234,24 +238,26 @@ void setLighting(){
     glLightfv(GL_LIGHT0, GL_DIFFUSE, white_light);   // Diffusing light
     glLightfv(GL_LIGHT0, GL_SPECULAR, white_light);  // Specular light
     // light#1 is a directional source from above.
-    glLightfv(GL_LIGHT1,GL_DIFFUSE,weak_light);
-    glLightfv(GL_LIGHT1,GL_SPECULAR,weak_light);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, weak_light);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, weak_light);
 
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, Light_Model_Ambient);  // ambient light. Set all over the scene.
+    glLightModelfv(
+        GL_LIGHT_MODEL_AMBIENT,
+        Light_Model_Ambient);  // ambient light. Set all over the scene.
 
-    glEnable(GL_LIGHTING);    // Enable lighting.
-    glEnable(GL_LIGHT0);      // Enable light#0
+    glEnable(GL_LIGHTING);  // Enable lighting.
+    glEnable(GL_LIGHT0);    // Enable light#0
     glEnable(GL_LIGHT1);
 }
 
-void setMaterial(){
+void setMaterial() {
     // reflexibility
     GLfloat mat_specular[] = {0.633, 0.727811, 0.633,
                               0.001};       // mirror reflex coefficient
     GLfloat mat_shininess[] = {0.2 * 128};  // highlight
     GLfloat mat_ambient[] = {0.0215, 0.175, 0.0215, 1.0};
     GLfloat mat_diffuse[] = {0.0757, 0.614, 0.07568, 1.0};
-    GLfloat mat_emission[] = {0.1,0.1,0.1,1};
+    GLfloat mat_emission[] = {0.1, 0.1, 0.1, 1};
     // Material properties.
     glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
     glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
@@ -263,19 +269,19 @@ void setMaterial(){
     // This setting looks much nicer. Have ambient and diffuse material property
     // track the current color.
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-} 
+}
 
-void setTexture(){
+void setTexture() {
     // glEnable(GL_TEXTURE_2D);
     // load texture, note that it's relative to the executable.
-    std::string folder="./img/texture/";
-    sunTexture=loadTexture(folder+"sun.png");
-    environmentTexture=loadTexture(folder+"milky_way.png");
-    jupiterTexture=loadTexture(folder+"jupiter.png");
-    saturnTexture=loadTexture(folder+"saturn.png");
-    earthTexture=loadTexture(folder+"earth.png");
-    moonTexture=loadTexture(folder+"moon.png");
-    mercuryTexture=loadTexture(folder+"mercury.png");
+    std::string folder = "./img/texture/";
+    sunTexture = loadTexture(folder + "sun.png");
+    environmentTexture = loadTexture(folder + "milky_way.png");
+    jupiterTexture = loadTexture(folder + "jupiter.png");
+    saturnTexture = loadTexture(folder + "saturn.png");
+    earthTexture = loadTexture(folder + "earth.png");
+    moonTexture = loadTexture(folder + "moon.png");
+    mercuryTexture = loadTexture(folder + "mercury.png");
     return;
 }
 
@@ -359,7 +365,7 @@ void keyPressed(unsigned char key, int mouseX, int mouseY) {
     glMatrixMode(GL_MODELVIEW);
     // FIXME: You need to insert the matrix into the foremost section of the
     // transformation.
-    glGetDoublev(GL_MODELVIEW_MATRIX,view);
+    glGetDoublev(GL_MODELVIEW_MATRIX, view);
     glLoadIdentity();
     glTranslated(-x, -y, -z);
     glMultMatrixd(view);
@@ -380,9 +386,10 @@ void mouseMove(int x, int y) {
         dPitch = 0;
     }
     while (yaw >= 360) yaw -= 360;
-    // FIXME: You need to insert the matrix into the foremost section of the transformation.
+    // FIXME: You need to insert the matrix into the foremost section of the
+    // transformation.
     glMatrixMode(GL_MODELVIEW);
-    glGetDoublev(GL_MODELVIEW_MATRIX,view);
+    glGetDoublev(GL_MODELVIEW_MATRIX, view);
     glLoadIdentity();
     // be careful with the signs!
     glRotated(dYaw, 0.0, 1.0, 0.0);

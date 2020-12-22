@@ -1,11 +1,9 @@
 #include "Astroid.h"
-#include "geometry.h"
-
 #include <GL/freeglut.h>
+#include "geometry.h"
 // in order to use M_PI
 #define _USE_MATH_DEFINES
 #include <math.h>
-
 
 static double orbitWidth = 0.1;
 static int slices = 50;
@@ -31,9 +29,21 @@ int Orbit::display() {
     return 0;
 }
 
-Astroid::Astroid(double r, double orbitR, double _period, double _day, double nx, double ny,
-                 double nz)
-    : radius(r), phi(0), year(_period), day(_day),orbit(orbitR, nx, ny, nz), emission(false),texture(0){
+Astroid::Astroid(double r, double orbitR, double _period, double _day,
+                 double nx, double ny, double nz)
+    : radius(r),
+      phi(0),
+      psi(0),
+      year(_period),
+      day(_day),
+      orbit(orbitR, nx, ny, nz),
+      emission(false),
+      texture(0) {
+    setColor(1.0, 0, 0, 1.0);
+}
+
+Astroid::Astroid(double _r, double _year, double _day, const Orbit& _orbit)
+    : radius(_r), phi(0), psi(0), year(_year), day(_day), orbit(_orbit) {
     setColor(1.0, 0, 0, 1.0);
 }
 
@@ -53,28 +63,35 @@ int Astroid::display() {
     // the angle is defined in degrees...
     glRotated(degrees(phi), 0, -1, 0);
     glTranslated(orbit.radius, 0, 0);
-    glColor3dv(color);
-    if (emission){
-        GLfloat oldEmission[4],newEmission[4];
-        double rate=0.9;
-        for (int i=0;i<4;i++) newEmission[i]=color[i]*rate;
 
-        glGetMaterialfv(GL_FRONT,GL_EMISSION,oldEmission);
-        glMaterialfv(GL_FRONT,GL_EMISSION,newEmission);
-        if (texture>0){
+    glPushMatrix();
+    // so that z axis is rotated to the perpendicular position with normal.
+    glRotated(90, 1, 0, 0);
+    glRotated(degrees(psi), 0, 0, 1);
+
+    glColor3dv(color);
+    if (emission) {
+        GLfloat oldEmission[4], newEmission[4];
+        double rate = 0.9;
+        for (int i = 0; i < 4; i++) newEmission[i] = color[i] * rate;
+
+        glGetMaterialfv(GL_FRONT, GL_EMISSION, oldEmission);
+        glMaterialfv(GL_FRONT, GL_EMISSION, newEmission);
+        if (texture > 0) {
             // bind texture.
             glEnable(GL_TEXTURE_2D);
             GLint oldTexture;
-            glGetIntegerv(GL_TEXTURE_BINDING_2D,&oldTexture);
-            glBindTexture(GL_TEXTURE_2D,texture);
-            GLUquadric* sphere=gluNewQuadric();
-            gluQuadricTexture(sphere,GLU_TRUE);
-            gluSphere(sphere,radius,slices,slices);
-            glBindTexture(GL_TEXTURE_2D,oldTexture);
+            glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldTexture);
+            glBindTexture(GL_TEXTURE_2D, texture);
+            GLUquadric* sphere = gluNewQuadric();
+            gluQuadricTexture(sphere, GLU_TRUE);
+            gluSphere(sphere, radius, slices, slices);
+            glBindTexture(GL_TEXTURE_2D, oldTexture);
             glDisable(GL_TEXTURE_2D);
-        } else glutSolidSphere(radius,slices,slices);
-        glMaterialfv(GL_FRONT,GL_EMISSION,oldEmission);
-    } else{
+        } else
+            glutSolidSphere(radius, slices, slices);
+        glMaterialfv(GL_FRONT, GL_EMISSION, oldEmission);
+    } else {
         if (texture > 0) {
             // bind texture.
             glEnable(GL_TEXTURE_2D);
@@ -89,6 +106,7 @@ int Astroid::display() {
         } else
             glutSolidSphere(radius, slices, slices);
     }
+    glPopMatrix();
     for (auto i = satellites.begin(); i != satellites.end(); i++) {
         (*i)->display();
     }
@@ -98,7 +116,9 @@ int Astroid::display() {
 
 int Astroid::revolution() {
     phi += 2 * M_PI * dt / year;
-    if (phi > 2 * M_PI) phi -= (2 * M_PI);
+    psi += 2 * M_PI * dt / day;
+    while (phi > 2 * M_PI) phi -= (2 * M_PI);
+    while (psi > 2 * M_PI) psi -= (2 * M_PI);
     for (auto i = satellites.begin(); i != satellites.end(); i++) {
         (*i)->revolution();
     }

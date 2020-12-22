@@ -21,8 +21,9 @@ class Orbit {
 
 class Astroid {
    public:
-    Astroid(double r, double orbitR, double year = 100, double day=1, double nx = 0,
-            double ny = -1, double nz = 0);
+    Astroid(double r, double orbitR, double year = 100, double day = 1,
+            double nx = 0, double ny = -1, double nz = 0);
+    Astroid(double r, double year, double day, const Orbit& orbit);
     double radius;
     Orbit orbit;
     /**
@@ -35,14 +36,14 @@ class Astroid {
     int setColor(double r, double g, double b, double a);
     // list of its satellites.
     std::list<Astroid*> satellites;
-    // TODO: Add rotation. For now we omit the rotation axis.
     bool emission;
     GLuint texture;
+
    private:
     GLdouble color[4];
     // revolution period, unit is second.
     double year;
-    // the revolution angular position. 
+    // the revolution angular position.
     double phi;
     // rotational period, unit is second.
     double day;
