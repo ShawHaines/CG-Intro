@@ -79,16 +79,16 @@ static void keyPressed(unsigned char key, int mouseX,int mouseY);
 
 
 int addAstroids() {
-    sun = new Astroid(10, 0, 1e6);
+    sun = new Astroid(10, 0, 1e6,1e6);
     // normal co-planar orbit test case.
-    auto earth = new Astroid(2.5, 30, 10, 0, 1, 0);
+    auto earth = new Astroid(2.5, 30, 10, 1, 0, 1, 0);
     // non-coplanar orbit test, satellite.
-    auto moon = new Astroid(1, 5, 5, 0, -10, 1);
-    auto jupiter = new Astroid(5, 75, 60, 1, 5, 0);
-    auto mercury = new Astroid(1.5, 20, 15, 0.1, 1, 0);
-    auto saturn = new Astroid(3.5, 55, 100);
+    auto moon = new Astroid(1, 5, 5,1e6 , 0, -10, 1);
+    auto jupiter = new Astroid(5, 75, 60, 1, 1, 5, 0);
+    auto mercury = new Astroid(1.5, 20, 15,1, 0.1, 1, 0);
+    auto saturn = new Astroid(3.5, 55,100);
     // saturn ring is a satellite with 0 size...
-    auto saturnRing = new Astroid(0, 5, 1e6, 1, -5, 1);
+    auto saturnRing = new Astroid(0, 5, 1e6,1e6, 1, -5, 1);
     // planets
     sun->satellites.push_back(earth);
     sun->satellites.push_back(jupiter);

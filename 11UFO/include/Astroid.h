@@ -21,7 +21,7 @@ class Orbit {
 
 class Astroid {
    public:
-    Astroid(double r, double orbitR, double period = 100, double nx = 0,
+    Astroid(double r, double orbitR, double year = 100, double day=1, double nx = 0,
             double ny = -1, double nz = 0);
     double radius;
     Orbit orbit;
@@ -41,7 +41,11 @@ class Astroid {
    private:
     GLdouble color[4];
     // revolution period, unit is second.
-    double period;
-    // the anglular position.
+    double year;
+    // the revolution angular position. 
     double phi;
+    // rotational period, unit is second.
+    double day;
+    // rotational angular position.
+    double psi;
 };

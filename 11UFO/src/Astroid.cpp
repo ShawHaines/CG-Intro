@@ -31,9 +31,9 @@ int Orbit::display() {
     return 0;
 }
 
-Astroid::Astroid(double r, double orbitR, double _period, double nx, double ny,
+Astroid::Astroid(double r, double orbitR, double _period, double _day, double nx, double ny,
                  double nz)
-    : radius(r), phi(0), period(_period), orbit(orbitR, nx, ny, nz), emission(false),texture(0){
+    : radius(r), phi(0), year(_period), day(_day),orbit(orbitR, nx, ny, nz), emission(false),texture(0){
     setColor(1.0, 0, 0, 1.0);
 }
 
@@ -97,7 +97,7 @@ int Astroid::display() {
 }
 
 int Astroid::revolution() {
-    phi += 2 * M_PI * dt / period;
+    phi += 2 * M_PI * dt / year;
     if (phi > 2 * M_PI) phi -= (2 * M_PI);
     for (auto i = satellites.begin(); i != satellites.end(); i++) {
         (*i)->revolution();
