@@ -43,7 +43,7 @@ Astroid::Astroid(double r, double orbitR, double _period, double _day,
 }
 
 Astroid::Astroid(double _r, double _year, double _day, const Orbit& _orbit)
-    : radius(_r), phi(0), psi(0), year(_year), day(_day), orbit(_orbit) {
+    : radius(_r), phi(0), psi(0), year(_year), day(_day), orbit(_orbit), emission(false){
     setColor(1.0, 0, 0, 1.0);
 }
 
