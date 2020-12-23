@@ -10,12 +10,12 @@
 using namespace std;
 
 /**
- * Convention: the screen axis is x,y (right, down direction)
+ * Convention: the screen axis is x,y (right, up direction)
  * z axis is perpendicular to the screen plane, whose direction is determined by
  * the right hand rule.
  * */
 
-// for mouse clicking
+// for mouse clicking.
 static int x_0;
 static int y_0;
 
@@ -78,16 +78,16 @@ static void keyPressed(unsigned char key, int mouseX, int mouseY);
 // -----------------------------------------------------------------------
 
 int addAstroids() {
-    sun = new Astroid(10, 0, 1e6, 1e2);
+    sun = new Astroid(10, 1e6, 100, Orbit(0));
     // normal co-planar orbit test case.
-    auto earth = new Astroid(2.5, 30, 10, 1, 0, 1, 0);
+    auto earth = new Astroid(2.5, 10, 1, Orbit(30, 0, 1, 0));
     // non-coplanar orbit test, satellite.
-    auto moon = new Astroid(1, 5, 5, 1e6, 0, -10, 1);
-    auto jupiter = new Astroid(5, 75, 60, 1, 1, 5, 0);
-    auto mercury = new Astroid(1.5, 20, 15, 1, 0.1, 1, 0);
+    auto moon = new Astroid(1, 5, 1e6, Orbit(5, 0, -10, 1));
+    auto jupiter = new Astroid(5, 60, 1, Orbit(75, 1, 5, 0));
+    auto mercury = new Astroid(1.5, 15, 1, Orbit(20, 0.1, 1, 0));
     auto saturn = new Astroid(3.5, 55, 100);
     // saturn ring is a satellite with 0 size...
-    auto saturnRing = new Astroid(0, 5, 1e6, 1e6, 1, -5, 1);
+    auto saturnRing = new Astroid(0, 1e6, 1e6, Orbit(5, 1, -5, 1));
     // planets
     sun->satellites.push_back(earth);
     sun->satellites.push_back(jupiter);
@@ -114,39 +114,35 @@ int addAstroids() {
 }
 
 void drawBox(double sideLength) {
-    // vertex coordinates for 6 faces. (+x is front, +z is top) Order: front, back, left, right, top, bottom.
-    GLdouble v[24][3]={
-        {1,1,1},{1,1,-1},{1,-1,-1},{1,-1,1},
-        {-1,1,1},{-1,-1,1},{-1,-1,-1},{-1,1,-1},
-        {1,-1,1},{1,-1,-1},{-1,-1,-1},{-1,-1,1},
-        {1,1,1},{-1,1,1},{-1,1,-1},{1,1,-1},
-        {1,1,1},{1,-1,1},{-1,-1,1},{-1,1,1},
-        {1,1,-1},{-1,1,-1},{-1,-1,-1},{1,-1,-1}
-    };
+    // vertex coordinates for 6 faces. (+x is front, +z is top) Order: front,
+    // back, left, right, top, bottom.
+    GLdouble v[24][3] = {{1, 1, 1},  {1, 1, -1},  {1, -1, -1},  {1, -1, 1},
+                         {-1, 1, 1}, {-1, -1, 1}, {-1, -1, -1}, {-1, 1, -1},
+                         {1, -1, 1}, {1, -1, -1}, {-1, -1, -1}, {-1, -1, 1},
+                         {1, 1, 1},  {-1, 1, 1},  {-1, 1, -1},  {1, 1, -1},
+                         {1, 1, 1},  {1, -1, 1},  {-1, -1, 1},  {-1, 1, 1},
+                         {1, 1, -1}, {-1, 1, -1}, {-1, -1, -1}, {1, -1, -1}};
     // box divided.
-    GLdouble vt[24][2]={
-        {1,2},{1,1},{0,1},{0,2},
-        {2,2},{3,2},{3,1},{2,1},
-        {4,2},{4,1},{3,1},{3,2},
-        {1,2},{2,2},{2,1},{1,1},
-        {1,2},{0,2},{0,3},{1,3},
-        {1,1},{1,0},{0,0},{0,1}
-    };
-    GLdouble cx=1/4.0,cy=1/3.0;
-    glColor3f(1,1,1);
+    GLdouble vt[24][2] = {{1, 2}, {1, 1}, {0, 1}, {0, 2}, {2, 2}, {3, 2},
+                          {3, 1}, {2, 1}, {4, 2}, {4, 1}, {3, 1}, {3, 2},
+                          {1, 2}, {2, 2}, {2, 1}, {1, 1}, {1, 2}, {0, 2},
+                          {0, 3}, {1, 3}, {1, 1}, {1, 0}, {0, 0}, {0, 1}};
+    GLdouble cx = 1 / 4.0, cy = 1 / 3.0;
+    glColor3f(1, 1, 1);
     glEnable(GL_TEXTURE_2D);
     GLint oldTexture;
-    glGetIntegerv(GL_TEXTURE_BINDING_2D,&oldTexture);
-    glBindTexture(GL_TEXTURE_2D,environmentTexture);
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldTexture);
+    glBindTexture(GL_TEXTURE_2D, environmentTexture);
     glBegin(GL_QUADS);
-    for (int i=0;i<24;i++){
-        for (int j=0;j<3;j++) v[i][j]*=sideLength/2.0;
-        vt[i][0]*=cx; vt[i][1]*=cy;
+    for (int i = 0; i < 24; i++) {
+        for (int j = 0; j < 3; j++) v[i][j] *= sideLength / 2.0;
+        vt[i][0] *= cx;
+        vt[i][1] *= cy;
         glTexCoord2dv(vt[i]);
         glVertex3dv(v[i]);
     }
     glEnd();
-    glBindTexture(GL_TEXTURE_2D,oldTexture);
+    glBindTexture(GL_TEXTURE_2D, oldTexture);
     glDisable(GL_TEXTURE_2D);
     return;
 }
@@ -180,9 +176,9 @@ void solarDisplay() {
 
     glPushMatrix();
     drawAxis();
-    
+
     glPushMatrix();
-    glRotated(-90,1,0,0);
+    glRotated(-90, 1, 0, 0);
     drawBox(1000);
     glPopMatrix();
 
