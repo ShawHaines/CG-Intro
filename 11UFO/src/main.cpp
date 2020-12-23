@@ -15,8 +15,6 @@ using namespace std;
  * the right hand rule.
  * */
 
-// static Point eye = {0.0, 0.0, 100.0};
-// static Point focus = {0.0, 0.0, 0.0};
 // for mouse clicking
 static int x_0;
 static int y_0;
@@ -116,69 +114,41 @@ int addAstroids() {
 }
 
 void drawBox(double sideLength) {
-    glMatrixMode(GL_MODELVIEW);
-    glColor3d(1,1,1);
-    // bottom facet (z is the normal)
-    glPushMatrix();
-    glTranslated(0, 0, -sideLength / 2);
-    drawUVSquare(sideLength, environmentTexture);
-    glPopMatrix();
-    // top facet (-z is the normal)
-    glPushMatrix();
-    glTranslated(0, 0, sideLength / 2);
-    glScaled(1, 1, -1);
-    drawUVSquare(sideLength, environmentTexture);
-    glPopMatrix();
-    // front facet (-x is the normal)
-    glPushMatrix();
-    glTranslated(sideLength / 2, 0, 0);
-    glRotated(-90, 0, 1, 0);
-    drawUVSquare(sideLength, environmentTexture);
-    glPopMatrix();
-    // back facet (x is the normal)
-    glPushMatrix();
-    glTranslated(-sideLength / 2, 0, 0);
-    glRotated(90, 0, 1, 0);
-    drawUVSquare(sideLength, environmentTexture);
-    glPopMatrix();
-    // right facet (-y is the normal)
-    glPushMatrix();
-    glTranslated(0, sideLength / 2, 0);
-    glRotated(90, 1, 0, 0);
-    drawUVSquare(sideLength, environmentTexture);
-    glPopMatrix();
-    // left facet (y is the normal)
-    glPushMatrix();
-    glTranslated(0, -sideLength / 2, 0);
-    glRotated(-90, 1, 0, 0);
-    drawUVSquare(sideLength, environmentTexture);
-    glPopMatrix();
-    return;
-}
-
-void drawUVSquare(double sidelength, GLuint texture) {
-    GLdouble vertices[4][2] = {{1, 1}, {-1, 1}, {-1, -1}, {1, -1}};
-    GLdouble vt[4][2] = {{1, 0}, {1, 1}, {0, 1}, {0, 0}};
-    GLdouble factor = 1.0;
-    // FIXME: glEnable() and glDisable() must be written outside of glBegin()
-    // and glEnd()...
-    // FIXME: binding texture seems to not functioning.
+    // vertex coordinates for 6 faces. (+x is front, +z is top) Order: front, back, left, right, top, bottom.
+    GLdouble v[24][3]={
+        {1,1,1},{1,1,-1},{1,-1,-1},{1,-1,1},
+        {-1,1,1},{-1,-1,1},{-1,-1,-1},{-1,1,-1},
+        {1,-1,1},{1,-1,-1},{-1,-1,-1},{-1,-1,1},
+        {1,1,1},{-1,1,1},{-1,1,-1},{1,1,-1},
+        {1,1,1},{1,-1,1},{-1,-1,1},{-1,1,1},
+        {1,1,-1},{-1,1,-1},{-1,-1,-1},{1,-1,-1}
+    };
+    // box divided.
+    GLdouble vt[24][2]={
+        {1,2},{1,1},{0,1},{0,2},
+        {2,2},{3,2},{3,1},{2,1},
+        {4,2},{4,1},{3,1},{3,2},
+        {1,2},{2,2},{2,1},{1,1},
+        {1,2},{0,2},{0,3},{1,3},
+        {1,1},{1,0},{0,0},{0,1}
+    };
+    GLdouble cx=1/4.0,cy=1/3.0;
+    glColor3f(1,1,1);
     glEnable(GL_TEXTURE_2D);
+    GLint oldTexture;
+    glGetIntegerv(GL_TEXTURE_BINDING_2D,&oldTexture);
+    glBindTexture(GL_TEXTURE_2D,environmentTexture);
     glBegin(GL_QUADS);
-    // the x, y coordinates.
-    glNormal3d(0, 0, 1);
-    // GLint oldTexture;
-    // glGetIntegerv(GL_TEXTURE_BINDING_2D,&oldTexture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    for (int i = 0; i < 4; i++) {
-        glTexCoord2d(vertices[i][0] * factor, vertices[i][1] * factor);
-        glVertex2d(vertices[i][0] * sidelength / 2,
-                   vertices[i][1] * sidelength / 2);
+    for (int i=0;i<24;i++){
+        for (int j=0;j<3;j++) v[i][j]*=sideLength/2.0;
+        vt[i][0]*=cx; vt[i][1]*=cy;
+        glTexCoord2dv(vt[i]);
+        glVertex3dv(v[i]);
     }
-    // restore the original settings.
-    // glBindTexture(GL_TEXTURE_2D,oldTexture);
     glEnd();
+    glBindTexture(GL_TEXTURE_2D,oldTexture);
     glDisable(GL_TEXTURE_2D);
+    return;
 }
 
 void drawAxis() {
@@ -210,8 +180,11 @@ void solarDisplay() {
 
     glPushMatrix();
     drawAxis();
-
-    drawBox(200);
+    
+    glPushMatrix();
+    glRotated(-90,1,0,0);
+    drawBox(1000);
+    glPopMatrix();
 
     // drawUFO();
     glLightfv(GL_LIGHT0, GL_POSITION, sun_light);
