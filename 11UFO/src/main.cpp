@@ -117,6 +117,7 @@ int addAstroids() {
 
 void drawBox(double sideLength) {
     glMatrixMode(GL_MODELVIEW);
+    glColor3d(1,1,1);
     // bottom facet (z is the normal)
     glPushMatrix();
     glTranslated(0, 0, -sideLength / 2);
@@ -276,12 +277,12 @@ void setTexture() {
     // load texture, note that it's relative to the executable.
     std::string folder = "./img/texture/";
     sunTexture = loadTexture(folder + "sun.png");
-    environmentTexture = loadTexture(folder + "milky_way.png");
     jupiterTexture = loadTexture(folder + "jupiter.png");
     saturnTexture = loadTexture(folder + "saturn.png");
     earthTexture = loadTexture(folder + "earth.png");
     moonTexture = loadTexture(folder + "moon.png");
     mercuryTexture = loadTexture(folder + "mercury.png");
+    environmentTexture = loadTexture(folder + "milky_way.png");
     return;
 }
 

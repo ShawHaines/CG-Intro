@@ -69,7 +69,6 @@ int Astroid::display() {
     glRotated(90, 1, 0, 0);
     glRotated(degrees(psi), 0, 0, 1);
 
-    glColor3dv(color);
     if (emission) {
         GLfloat oldEmission[4], newEmission[4];
         double rate = 0.9;
@@ -77,8 +76,10 @@ int Astroid::display() {
 
         glGetMaterialfv(GL_FRONT, GL_EMISSION, oldEmission);
         glMaterialfv(GL_FRONT, GL_EMISSION, newEmission);
+        // override the color argument.
         if (texture > 0) {
             // bind texture.
+            glColor3d(1,1,1);
             glEnable(GL_TEXTURE_2D);
             GLint oldTexture;
             glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldTexture);
@@ -88,12 +89,15 @@ int Astroid::display() {
             gluSphere(sphere, radius, slices, slices);
             glBindTexture(GL_TEXTURE_2D, oldTexture);
             glDisable(GL_TEXTURE_2D);
-        } else
+        } else{
+            glColor3dv(color);
             glutSolidSphere(radius, slices, slices);
+        }
         glMaterialfv(GL_FRONT, GL_EMISSION, oldEmission);
     } else {
         if (texture > 0) {
             // bind texture.
+            glColor3d(1,1,1);
             glEnable(GL_TEXTURE_2D);
             GLint oldTexture;
             glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldTexture);
@@ -103,8 +107,10 @@ int Astroid::display() {
             gluSphere(sphere, radius, slices, slices);
             glBindTexture(GL_TEXTURE_2D, oldTexture);
             glDisable(GL_TEXTURE_2D);
-        } else
+        } else{
+            glColor3dv(color);
             glutSolidSphere(radius, slices, slices);
+        }
     }
     glPopMatrix();
     for (auto i = satellites.begin(); i != satellites.end(); i++) {
