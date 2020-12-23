@@ -282,7 +282,7 @@ void setTexture() {
     earthTexture = loadTexture(folder + "earth.png");
     moonTexture = loadTexture(folder + "moon.png");
     mercuryTexture = loadTexture(folder + "mercury.png");
-    environmentTexture = loadTexture(folder + "milky_way.png");
+    environmentTexture = loadTexture(folder + "starmap.png");
     return;
 }
 
